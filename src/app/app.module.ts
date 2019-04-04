@@ -9,6 +9,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { PostComponent } from './post/post.component';
 import { PostFormComponent } from './post-form/post-form.component';
 import { CommentComponent } from './comment/comment.component';
+import { CommentFormComponent } from './comment-form/comment-form.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { CommentComponent } from './comment/comment.component';
     ProfileComponent,
     PostComponent,
     PostFormComponent,
-    CommentComponent
+    CommentComponent,
+    CommentFormComponent
   ],
   imports: [
     BrowserModule,

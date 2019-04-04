@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Post } from '../post';
+import { Post } from '../post-comment';
 
 @Component({
   selector: 'app-timeline',

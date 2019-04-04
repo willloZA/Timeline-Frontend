@@ -1,15 +1,22 @@
 <div class="card">
-  <div class="card-body">
+  <div class="card-header">
     <h4 class="card-title">{{ post.name }}</h4>
+  </div>
+  <div class="card-body">
     <p class="card-text"> {{ post.contents }}</p>
   </div>
   <div class="card-footer">
-    {{ post.date | date }}
-    <button class="btn btn-primary btn-sm" (click)="toggleComments();">Show Comments</button>
+    {{ post.date | date:'d MMMM, h:mm a' }}
+    <button class="btn btn-sm" [ngClass]="enabledComments ? 'btn-secondary' : 'btn-primary'" (click)="toggleComments();">Comments</button>
   </div>
-  <div class="container" *ngIf="enabledComments">
-    <div class="card" *ngFor="let comment of post.comments">
-      {{ comment.contents }}
-    </div>
+</div>
+<div class="container" *ngIf="enabledComments">
+  <!-- hide form if not authenticated -->
+  <app-comment-form></app-comment-form>
+  <div *ngIf="post.comments.length == 0">
+    Be the first to comment!
+  </div>
+  <div class="container" *ngIf="post.comments.length > 0">
+    <app-comment [comment]="comment" *ngFor="let comment of post.comments"></app-comment>
   </div>
 </div>

@@ -1,4 +1,5 @@
 <div class="container">
+  <!-- hide form if not authenticated -->
   <app-post-form></app-post-form>
   <div class="container" *ngFor="let post of posts">
     <app-post [post]="post"></app-post>
