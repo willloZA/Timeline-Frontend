@@ -1,0 +1,15 @@
+<div class="card">
+  <div class="card-body">
+    <h4 class="card-title">{{ post.name }}</h4>
+    <p class="card-text"> {{ post.contents }}</p>
+  </div>
+  <div class="card-footer">
+    {{ post.date | date }}
+    <button class="btn btn-primary btn-sm" (click)="toggleComments();">Show Comments</button>
+  </div>
+  <div class="container" *ngIf="enabledComments">
+    <div class="card" *ngFor="let comment of post.comments">
+      {{ comment.contents }}
+    </div>
+  </div>
+</div>
