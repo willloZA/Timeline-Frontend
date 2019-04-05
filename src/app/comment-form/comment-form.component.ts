@@ -21,7 +21,8 @@ export class CommentFormComponent implements OnInit {
     if (this.newComment && this.newComment.replace(/\s/g, '').length) {
       this.commented.emit(this.newComment);
       // use Post Service comment method to update server and client's data
-      console.log(`comment form emitted $(this.newComment)`)
+      console.log(`comment form emitted "${this.newComment}"`)
+      this.newComment = undefined;
     }
   }
 

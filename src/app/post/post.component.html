@@ -64,15 +64,15 @@
       <!-- <a href="#" class="card-link"><i class="fa fa-mail-forward"></i> Share</a> -->
     </div>
     <div class="container" *ngIf="enabledComments">
-        <ul class="list-group comments-list" *ngIf="post.comments.length > 0">
-          <!-- hide form if not authenticated -->
-          <app-comment-form (commented)="onComment($event);"></app-comment-form>
-          <div *ngIf="post.comments.length == 0">
-            Be the first to comment!
-          </div>
-          <li class="list-group-item" *ngFor="let comment of post.comments">
-              <app-comment [comment]="comment"></app-comment>
-          </li>
-        </ul>
+      <!-- hide form if not authenticated -->
+      <app-comment-form (commented)="onComment($event);"></app-comment-form>
+      <div *ngIf="post.comments.length == 0">
+        Be the first to comment!
+      </div>
+      <ul class="list-group comments-list" *ngIf="post.comments.length > 0">
+        <li class="list-group-item" *ngFor="let comment of post.comments">
+            <app-comment [comment]="comment"></app-comment>
+        </li>
+      </ul>
     </div>
 </div>

@@ -1,5 +1,21 @@
 <!-- too much time wasted attempting to style form for simple input -->
-<div class="input-group">
-  <input (keyup.enter)="comment();" class="form-control" placeholder="Add a comment" type="text" [(ngModel)]="newComment">
-  <button class="btn btn-primary sm" (click)="comment();">Send</button>
-</div>
+<form novalidate (ngSubmit)="comment()" autocomplete="off">
+  <div class="col-12 comment-input">
+    <div class="input-group">
+      <textarea
+        name="comment"
+        class="form-control"
+        placeholder="Add a comment"
+        type="text"
+        rows="1"
+        (keydown.enter)="comment();false"
+        [(ngModel)]="newComment"></textarea>
+      <div>
+        <button class="btn btn-primary sm" type="submit">Send</button>
+      </div>
+    </div>
+    <small class="form-text text-muted">
+      Shift+Enter newline.
+    </small>
+  </div>
+</form>
