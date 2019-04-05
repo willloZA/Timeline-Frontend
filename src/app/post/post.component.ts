@@ -20,4 +20,8 @@ export class PostComponent implements OnInit {
     this.enabledComments = !this.enabledComments;
   }
 
+  onComment(comment: String): void {
+    console.log(comment);
+  }
+
 }

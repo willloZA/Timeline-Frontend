@@ -1,6 +1,33 @@
-.card {
-    font-size: 100%;
-    h1, h2, h3, h4 {
-        font-size: 100%;
+.comment {
+    display: block;
+    width: 100%;
+    margin: 20px 0;
+    .avatar {
+        width: 35px;
+        height: 35px;
     }
+    .comment-heading {
+        display: block;
+        width: 100%;
+
+        .user {
+            font-size: 14px;
+            font-weight: bold;
+            display: inline;
+            margin-top: 0;
+            margin-right: 10px;
+        }
+
+        .time {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 0;
+            display: inline;
+        }
+    }
+
+    /* .comment-body {
+        margin-left: 50px;
+    } */
+
 }
