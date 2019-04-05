@@ -1,6 +1,16 @@
-<p>
-  post-form works!
-</p>
-<form>
-  
+<form novalidate (ngSubmit)="post()" autocomplete="off">
+  <div class="input-group">
+    <textarea
+      name="comment"
+      class="form-control"
+      placeholder="Add a comment"
+      type="text"
+      rows="1"
+      (keydown.enter)="post();false"
+      [(ngModel)]="newPost"></textarea>
+    <button class="btn btn-primary sm" type="submit">Send</button>
+  </div>
+  <small class="form-text text-muted">
+    Shift+Enter newline.
+  </small>
 </form>

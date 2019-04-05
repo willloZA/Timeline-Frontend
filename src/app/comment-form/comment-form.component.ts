@@ -17,7 +17,7 @@ export class CommentFormComponent implements OnInit {
   }
 
   comment(): void {
-    // form input would probably be easier though form styling is taking a while for such simple input
+    // check for valid input via form instead of regex
     if (this.newComment && this.newComment.replace(/\s/g, '').length) {
       this.commented.emit(this.newComment);
       // use Post Service comment method to update server and client's data
