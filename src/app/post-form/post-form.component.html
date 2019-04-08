@@ -1,4 +1,4 @@
-<form novalidate (ngSubmit)="post()" autocomplete="off">
+<form #postForm="ngForm" novalidate (ngSubmit)="post(postForm)" autocomplete="off">
   <div class="input-group">
     <textarea
       name="comment"
@@ -8,7 +8,9 @@
       rows="1"
       (keydown.enter)="post();false"
       [(ngModel)]="newPost"></textarea>
-    <button class="btn btn-primary sm" type="submit">Send</button>
+    <div>
+      <button class="btn btn-primary sm" type="submit">Send</button>
+    </div>
   </div>
   <small class="form-text text-muted">
     Shift+Enter newline.

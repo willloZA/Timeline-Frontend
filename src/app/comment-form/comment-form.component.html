@@ -1,5 +1,5 @@
 <!-- implement form validation if possible -->
-<form novalidate (ngSubmit)="comment()" autocomplete="off">
+<form #commentForm="ngForm" novalidate (ngSubmit)="comment(commentForm)" autocomplete="off">
   <div class="col-12 comment-input">
     <div class="input-group">
       <textarea
@@ -8,8 +8,7 @@
         placeholder="Add a comment"
         type="text"
         rows="1"
-        (keydown.enter)="comment();false"
-        [(ngModel)]="newComment"></textarea>
+        (keydown.enter)="comment(commentForm);false"></textarea>
       <div>
         <button class="btn btn-primary sm" type="submit">Send</button>
       </div>
