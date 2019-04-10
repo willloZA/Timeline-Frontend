@@ -3,13 +3,13 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AuthService } from '../auth.service';
 
 @Component({
-  selector: 'app-signup',
-  templateUrl: './signup.component.html',
-  styleUrls: ['./signup.component.scss']
+  selector: 'app-login-form',
+  templateUrl: './login-form.component.html',
+  styleUrls: ['./login-form.component.scss']
 })
-export class SignupComponent implements OnInit {
+export class LoginFormComponent implements OnInit {
 
-  signupForm: FormGroup;
+  loginForm: FormGroup;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -19,23 +19,20 @@ export class SignupComponent implements OnInit {
   }
 
   createForm() {
-    this.signupForm = this.formBuilder.group({
-      firstName : ['', Validators.required],
-      lastName  : ['', Validators.required],
+    this.loginForm = this.formBuilder.group({
       email     : ['', Validators.required],
       password  : ['', Validators.required]
     })
   }
 
-  onSignupSubmit() {
-    this.authService.registerUser(this.signupForm.value)
+  onLoginSubmit() {
+    this.authService.login(this.loginForm.value)
       .subscribe((data) => {
         console.log(data);
       });
-    console.log(this.signupForm.value);
-    this.signupForm.reset();
+    console.log(this.loginForm.value);
+    this.loginForm.reset();
   }
-
   ngOnInit() {
   }
 
