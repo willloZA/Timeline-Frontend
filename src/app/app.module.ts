@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ISailsClientConfig, SailsClientModule } from 'ngx-sails';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -16,6 +17,8 @@ import { CommentFormComponent } from './comment-form/comment-form.component';
 import { SignupComponent } from './signup/signup.component';
 import { AuthService } from './auth.service';
 import { LoginFormComponent } from './login-form/login-form.component';
+
+const socketConfig: ISailsClientConfig = { uri: 'http://localhost:1337' };
 
 @NgModule({
   declarations: [
@@ -35,7 +38,8 @@ import { LoginFormComponent } from './login-form/login-form.component';
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    SailsClientModule.configureClient(socketConfig)
   ],
   providers: [
     AuthService

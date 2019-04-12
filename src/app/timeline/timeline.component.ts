@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { SailsClient } from 'ngx-sails';
 import { Post } from '../post-comment';
 
 @Component({
@@ -8,7 +9,7 @@ import { Post } from '../post-comment';
 })
 export class TimelineComponent implements OnInit {
 
-  //template of posts data to be retrieved by service
+  /* //template of posts data to be retrieved by service
   posts: Post[] = [
     {name:    'John Smith',
     contents:'This is the first template post',
@@ -39,11 +40,21 @@ export class TimelineComponent implements OnInit {
      date:    new Date('2019-04-01T14:20+02:00'),
      id:      'd',
      comments: []}    
-  ];
+  ]; */
 
-  constructor() { } // posts fetch service to populate timeline
+  constructor(private sails: SailsClient) { } // posts fetch service to populate timeline
 
   ngOnInit() {
+
+    this.sails.on('post').subscribe(resp => {
+      console.log('post event!', resp);
+      // this.messages.push(resp.data.message);
+    });
+
+    this.sails.get('/post').subscribe(data => {
+      console.log('get chat', data);
+      // data.data.map((obj) => this.messages.push(obj.message));
+    });
   }
 
 }
