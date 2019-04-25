@@ -29,7 +29,7 @@
                     <!-- <img class="rounded-circle" width="45" src="https://picsum.photos/50/50" alt=""> -->
                 </div>
                 <div class="ml-2">
-                    <div class="h5 m-0">{{ post.name }}</div>
+                    <div class="h5 m-0">{{ post.user.firstName + ' ' + post.user.lastName }}</div>
                     <!-- <div class="h7 text-muted">Miracles Lee Cross</div> -->
                 </div>
             </div>
@@ -52,10 +52,10 @@
     </div>
     <div class="card-body">
       
-      <div class="text-muted h7 mb-2"> {{ post.date | date:'d MMMM, h:mm a' }}<!-- <i class="fa fa-clock-o"></i>10 min ago --></div>
+      <div class="text-muted h7 mb-2"> {{ post.updatedAt | date:'d MMMM, h:mm a' }}<!-- <i class="fa fa-clock-o"></i>10 min ago --></div>
 
       <p class="card-text">
-        {{ post.contents }}
+        {{ post.message }}
       </p>
     </div>
     <div class="card-footer">
@@ -63,10 +63,10 @@
       <button class="btn btn-sm" [ngClass]="enabledComments ? 'btn-secondary' : 'btn-primary'" (click)="toggleComments();">Comments</button>
       <!-- <a href="#" class="card-link"><i class="fa fa-mail-forward"></i> Share</a> -->
     </div>
-    <div class="container" *ngIf="enabledComments">
+    <div class="container" *ngIf="post.showComments">
       <!-- hide form if not authenticated -->
       <app-comment-form (commented)="onComment($event);"></app-comment-form>
-      <div *ngIf="post.comments.length == 0">
+      <div *ngIf="post.comments.length === 0">
         Be the first to comment!
       </div>
       <ul class="list-group comments-list" *ngIf="post.comments.length > 0">

@@ -1,14 +1,24 @@
+//refactor with users.ts
+export class User {
+    firstName   : string;
+    lastName    : string;
+    id          : string;
+}
+
 export class Comment {
-    name:    String;
-    contents:String;
-    date:    Date;      //add date calculation method to display "minutes/hours ago" instead of full date for recent posts
-    id:      String;
+    user        : User;
+    message     : string;
+    createdAt   : Date;      //add date calculation method to display "minutes/hours ago" instead of full date for recent posts
+    updatedAt   : Date;
+    id          : string;
 }
 
 export class Post {
-    name:    String;
-    contents:String;
-    date:    Date;      //add date calculation method to display "minutes/hours ago" instead of full date for recent posts
-    id:      String;
-    comments: Comment[];
+    user        : User;
+    message     : string;
+    createdAt   : Date;      //add date calculation method to display "minutes/hours ago" instead of full date for recent posts
+    updatedAt   : Date;
+    id          : string;
+    comments    : Comment[] = [];
+    showComments: boolean   = false;
 }

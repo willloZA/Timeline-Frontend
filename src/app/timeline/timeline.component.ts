@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Observable } from 'rxjs';
 import { SailsClient } from 'ngx-sails';
+import { TimelineService } from '../timeline.service';
 import { Post } from '../post-comment';
 
 @Component({
@@ -7,54 +9,37 @@ import { Post } from '../post-comment';
   templateUrl: './timeline.component.html',
   styleUrls: ['./timeline.component.scss']
 })
-export class TimelineComponent implements OnInit {
+export class TimelineComponent implements OnInit, OnDestroy {
 
-  /* //template of posts data to be retrieved by service
-  posts: Post[] = [
-    {name:    'John Smith',
-    contents:'This is the first template post',
-    date:    new Date('2019-04-01T14:20+02:00'),
-    id:      'a',
-    comments: [
-      {name:    'Jane Smith',
-      contents: 'This is the first template comment',
-      date:     new Date('2019-04-01T14:20+02:00'),
-      id:       'a'},
-      {name:    'John Smith',
-      contents: 'This is the second template comment',
-      date:     new Date('2019-04-01T14:20+02:00'),
-      id:       'b'},
-     ]},
-    {name:    'Jane Smith',
-     contents:'This is the second template post',
-     date:    new Date('2019-04-01T14:20+02:00'),
-     id:      'b',
-     comments: []},
-    {name:    'John Smith',
-     contents:'This is the third template post',
-     date:    new Date('2019-04-01T14:20+02:00'),
-     id:      'c',
-     comments: []},
-    {name:    'Jane Smith',
-     contents:'This is the fourth template post',
-     date:    new Date('2019-04-01T14:20+02:00'),
-     id:      'd',
-     comments: []}    
-  ]; */
+  posts: Observable<Post[]>;
 
-  constructor(private sails: SailsClient) { } // posts fetch service to populate timeline
+  constructor(
+    public timelineService: TimelineService
+  ) {
+      /* this.timelineService.getPosts()
+        .subscribe((resp: Post[]) => {
+          this.posts = resp;
+        });
+      console.log('timeline constructed', this.posts); */
+  }
+
+  /* onPosted(post: string) {
+    console.log('posted');
+    this.timelineService.createPost(post)
+      .subscribe((resp: Post) => {
+        console.log('successful post: ', resp);
+        this.posts.unshift(resp);
+      });
+  } */
 
   ngOnInit() {
+    this.posts = this.timelineService.posts;
+    this.timelineService.loadAll();
+    this.timelineService.watchPosts();
+  }
 
-    this.sails.on('post').subscribe(resp => {
-      console.log('post event!', resp);
-      // this.messages.push(resp.data.message);
-    });
-
-    this.sails.get('/post').subscribe(data => {
-      console.log('get chat', data);
-      // data.data.map((obj) => this.messages.push(obj.message));
-    });
+  ngOnDestroy() {
+    this.timelineService.unwatchPosts();
   }
 
 }

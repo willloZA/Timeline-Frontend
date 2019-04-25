@@ -13,9 +13,9 @@
   </a> -->    <!-- implement profile pictures -->
   <div class="comment-body">
     <div class="comment-heading">
-      <h4 class="user">{{ comment.name }}</h4>
-      <h5 class="time">{{ comment.date | date:'d MMMM, h:mm a' }}</h5>
+      <h4 class="user">{{ comment.user.firstName + ' ' + comment.user.lastName }}</h4>
+      <h5 class="time">{{ comment.updatedAt | date:'d MMMM, h:mm a' }}</h5>
     </div>
-    <p>{{ comment.contents }}</p>
+    <p>{{ comment.message }}</p>
   </div>
 </div>

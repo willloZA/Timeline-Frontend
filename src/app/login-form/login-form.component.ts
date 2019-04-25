@@ -14,8 +14,8 @@ export class LoginFormComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private authService: AuthService
-  ) { 
-    this.createForm()
+  ) {
+    this.createForm();
   }
 
   createForm() {
@@ -26,11 +26,9 @@ export class LoginFormComponent implements OnInit {
   }
 
   onLoginSubmit() {
-    this.authService.login(this.loginForm.value)
-      .subscribe((data) => {
-        console.log(data);
-      });
-    console.log(this.loginForm.value);
+    this.authService.login(this.loginForm.value, (resp) => {
+      console.log(resp);
+    });
     this.loginForm.reset();
   }
   ngOnInit() {

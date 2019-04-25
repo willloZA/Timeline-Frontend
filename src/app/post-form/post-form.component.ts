@@ -1,23 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 
 @Component({
   selector: 'app-post-form',
   templateUrl: './post-form.component.html',
   styleUrls: ['./post-form.component.scss']
 })
-export class PostFormComponent implements OnInit {
+export class PostFormComponent {
 
-  newPost: String;
+  @Output() posted = new EventEmitter<string>();
+  newPost: string;
 
   constructor() { }
 
-  ngOnInit() {
-  }
-
   post(): void {
-    if (this.newPost && this.newPost.replace(/\s/g, '').length) {
-      // use Post Service post method to update server and client's data
-      console.log(`Post: \n"${this.newPost}"`)
+    if (this.newPost && this.newPost.trim() !== '') {
+      this.posted.emit(this.newPost);
+      console.log(`Post: \n"${this.newPost}"`);
       this.newPost = undefined;
     }
   }

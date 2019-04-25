@@ -8,7 +8,8 @@
         placeholder="Add a comment"
         type="text"
         rows="1"
-        (keydown.enter)="comment(commentForm);false"></textarea>
+        (keydown.enter)="comment(commentForm);false"
+        [(ngModel)]="newComment"></textarea>
       <div>
         <button class="btn btn-primary sm" type="submit">Send</button>
       </div>
