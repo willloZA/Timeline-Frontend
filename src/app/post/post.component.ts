@@ -21,7 +21,7 @@ export class PostComponent implements OnInit {
 
   ngOnInit() {
     // implement pub sub without reinitialising
-    console.log('post initialised: ', this.post);
+    // console.log('post initialised: ', this.post);
   }
 
   toggleComments(): void {

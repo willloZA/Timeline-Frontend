@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Observable } from 'rxjs';
-import { SailsClient } from 'ngx-sails';
 import { TimelineService } from '../timeline.service';
 import { Post } from '../post-comment';
 
@@ -12,28 +11,28 @@ import { Post } from '../post-comment';
 export class TimelineComponent implements OnInit, OnDestroy {
 
   posts: Observable<Post[]>;
+  defPosts: Observable<number>;
 
   constructor(
     public timelineService: TimelineService
-  ) {
-      /* this.timelineService.getPosts()
-        .subscribe((resp: Post[]) => {
-          this.posts = resp;
-        });
-      console.log('timeline constructed', this.posts); */
+  ) {}
+
+  reloadTimeline() {
+    this.timelineService.resetDefPosts();
   }
 
-  /* onPosted(post: string) {
-    console.log('posted');
-    this.timelineService.createPost(post)
-      .subscribe((resp: Post) => {
-        console.log('successful post: ', resp);
-        this.posts.unshift(resp);
+  onPosted(message: string) {
+    this.timelineService.createPost(message)
+      .subscribe((resp) => {
+        console.log(resp);
+      }, (err) => {
+        console.log(err);
       });
-  } */
+  }
 
   ngOnInit() {
     this.posts = this.timelineService.posts;
+    this.defPosts = this.timelineService.defPosts;
     this.timelineService.loadAll();
     this.timelineService.watchPosts();
   }

@@ -1,6 +1,7 @@
 <div class="container">
   <!-- hide form if not authenticated -->
   <app-post-form (posted)="onPosted($event);"></app-post-form>
+  <button class="btn btn-primary sm" *ngIf="(defPosts | async) > 0" (click)="reloadTimeline();">+ {{ defPosts | async }} Posts</button>
   <div class="container" *ngFor="let post of posts | async">
     <app-post [post]="post"></app-post>
   </div>

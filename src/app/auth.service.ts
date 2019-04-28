@@ -31,7 +31,8 @@ export class AuthService {
   login(user, cb) {
     this.http.post(this.apiUrl + '/login', user, this.httpOptions)
       .subscribe((resp) => {
-        this.currentUser = resp['data'];
+        console.log(resp);
+        this.currentUser = resp['user'];
         //add error checking
         cb(resp['message']);
       });
