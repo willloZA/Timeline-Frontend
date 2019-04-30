@@ -60,22 +60,20 @@ export class PostComponent implements OnInit {
       message: content,
       post: this.post.id
     };
-    /* this.timelineService.createComment(comment)
-      .subscribe((resp: Comment) => {
-        console.log('successful comment: ', resp);
-        this.post.comments.unshift(resp);
-      }); */
-
-    /* this.sails.post('/comment', comment)
+    this.timelineService.createComment(comment)
       .subscribe((resp) => {
         console.log(resp);
-        // insert successful comments from this component or emit to timeline
-        if (!this.post.comments) {
-          // first comment
-          this.post.comments = [];
-        }
-        this.post.comments.unshift(resp.data);
-      }); */
+      }, (err) => {
+        console.log(err);
+      });
+  }
+
+  deletePost() {
+    console.log('delete');
+    this.timelineService.deletePost(this.post.id)
+    .subscribe(() => {}, (err) => {
+      console.log(err);
+    });
   }
 
 }

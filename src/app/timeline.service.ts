@@ -1,9 +1,8 @@
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { SailsClient } from 'ngx-sails';
 import { AuthService } from './auth.service';
-import { Post, Comment } from './post-comment';
-import { TestingCompilerImpl } from '@angular/platform-browser-dynamic/testing/src/compiler_factory';
+import { Post } from './post-comment';
 
 @Injectable({
   providedIn: 'root'
@@ -115,13 +114,26 @@ export class TimelineService {
               // emits updated count of deferred posts via _defPosts Subject
               this._defPosts.next(Object.assign({}, this.dataStore).defPosts.length);
               break;
+            case 'addedTo':
+              // updates dataStore post comments with new comment
+              this.dataStore.posts.map((post) => {
+                if (post.id === resp.id) {
+                  post.comments.unshift(resp.added);
+                }
+              });
+              // emits updated list of posts as a copy of dataStore via _posts Subject
+              this._posts.next(Object.assign({}, this.dataStore).posts);
+              break;
             default:
               // unhandled event verb
               console.log('unhandled event verb');
           }
         });
     } else {
-      this.resetDefPosts();
+      // check if any other posts have comments shown before updating with deferred posts
+      if (!this.dataStore.posts.find((post) => post.showComments === true)) {
+        this.resetDefPosts();
+      }
     }
 
   }
@@ -137,38 +149,12 @@ export class TimelineService {
     this._defPosts = new BehaviorSubject(0) as BehaviorSubject<number>;
   }
 
-  /* watchPosts() {
-    return new Observable((observer) => {
-      this.sails.on('post')
-        .subscribe(resp => {
-          console.log('post event!', resp);
-          // convert to observable so timeline doesn't reinitialise on post updates/creates
-          if (resp.verb === 'created') {
-            // this.updatePosts();
-            this.dataStore.posts.unshift(resp.added);
-            observer.next(resp);
-            return {}
-          }
-        });
-    });
-  }
-
-  getPosts() {
-    return new Observable((observer) => {
-      this.sails.get('/post')
-        .subscribe(resp => {
-          console.log('get chat', resp);
-          observer.next(resp.data.reverse());
-          observer.complete();
-        }, (err) => observer.error(err));
-      });
-  } */
-
   createPost(postString) {
     const post = {
       message: postString,
       user: this.authService.getUserId()
     };
+    console.log(post);
     return new Observable((observer) => {
       this.sails.post('/post', post)
         .subscribe((resp) => {
@@ -182,6 +168,17 @@ export class TimelineService {
       }, (err) => observer.error(err));
     });
   }
+
+  deletePost(id: string) {
+    return new Observable((observer) => {
+      this.sails.delete('/post/' + id)
+        .subscribe((resp) => {
+          this.dataStore.posts.splice(this.dataStore.posts.findIndex((post) => post.id === id), 1);
+          this._posts.next(Object.assign({}, this.dataStore).posts);
+          observer.complete();
+        }, (err) => observer.error(err));
+    });
+  }
   // ensure comment create is working correctly, return interpreted error as per above
   createComment(comment) {
     comment.user = this.authService.getUserId();
@@ -189,8 +186,15 @@ export class TimelineService {
       this.sails.post('/comment', comment)
         .subscribe((resp) => {
           console.log(resp);
-          // service logic
-          observer.next(resp.data);
+          // updates dataStore of post with newly created comment
+          this.dataStore.posts.map((post) => {
+            if ( post.id === resp.data.post) {
+              post.comments.unshift(resp.data);
+            }
+          });
+          // emits updated list of posts as a copy of dataStore via _posts Subject
+          this._posts.next(Object.assign({}, this.dataStore).posts);
+          observer.next(resp.status);
           observer.complete();
         }, (err) => observer.error(err));
     });
