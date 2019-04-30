@@ -1,20 +1,16 @@
-<!-- <div class="card">
-  <div class="card-body">
-    <h4 class="card-title">{{ comment.name + ":"}}</h4>
-    <p class="card-text"> {{ comment.contents }}</p>
-    <p>{{ comment.date | date:'d MMMM, h:mm a' }}</p>
-  </div>
-</div>
- -->
-
 <div class="comment">
-  <!-- <a class="pull-left" href="#">
-    <img class="avatar" src="https://bootdey.com/img/Content/user_3.jpg" alt="avatar">
-  </a> -->    <!-- implement profile pictures -->
   <div class="comment-body">
     <div class="comment-heading">
       <h4 class="user">{{ comment.user.firstName + ' ' + comment.user.lastName }}</h4>
       <h5 class="time">{{ comment.updatedAt | date:'d MMMM, h:mm a' }}</h5>
+      <button
+        type="button"
+        class="close"
+        aria-label="Close"
+        (click)="deleteComment();"
+        *ngIf="owner">
+        <span aria-hidden="true">&times;</span>
+      </button>
     </div>
     <p>{{ comment.message }}</p>
   </div>

@@ -1,6 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { TimelineService } from '../timeline.service';
-import { Post, Comment } from '../post-comment';
+import { AuthService } from '../auth.service';
+import { Post } from '../post-comment';
+import { post } from 'selenium-webdriver/http';
 
 @Component({
   selector: 'app-post',
@@ -9,19 +11,23 @@ import { Post, Comment } from '../post-comment';
 })
 export class PostComponent implements OnInit {
   @Input() post: Post;
-
+  owner = false;
   enabledComments = false;
 
   commentConn;
   postConn;
 
   constructor(
-    private timelineService: TimelineService
+    private timelineService: TimelineService,
+    private authService: AuthService
   ) { }
 
   ngOnInit() {
     // implement pub sub without reinitialising
     // console.log('post initialised: ', this.post);
+    if (this.post.user.id === this.authService.getUserId()) {
+      this.owner = true;
+    }
   }
 
   toggleComments(): void {
@@ -69,7 +75,6 @@ export class PostComponent implements OnInit {
   }
 
   deletePost() {
-    console.log('delete');
     this.timelineService.deletePost(this.post.id)
     .subscribe(() => {}, (err) => {
       console.log(err);

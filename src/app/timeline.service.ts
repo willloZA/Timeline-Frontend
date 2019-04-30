@@ -25,6 +25,15 @@ export class TimelineService {
 
   private connDefPost;
 
+  constructor(
+    private sails: SailsClient,
+    private authService: AuthService
+  ) {
+    this.dataStore = { posts: [], defPosts: [] };
+    this._posts = new BehaviorSubject([]) as BehaviorSubject<Post[]>;
+    this._defPosts = new BehaviorSubject(0) as BehaviorSubject<number>;
+  }
+
   get posts() {
     return this._posts.asObservable();
   }
@@ -56,6 +65,42 @@ export class TimelineService {
             this.dataStore.posts.unshift(resp.data);
             // emits updated list of posts as a copy of dataStore via _posts Subject
             this._posts.next(Object.assign({}, this.dataStore).posts);
+            break;
+          case 'addedTo':
+            // updates dataStore post comments with new comment
+            this.dataStore.posts.map((post) => {
+              if (post.id === resp.id) {
+                post.comments.unshift(resp.added);
+              }
+            });
+            // emits updated list of posts as a copy of dataStore via _posts Subject
+            this._posts.next(Object.assign({}, this.dataStore).posts);
+            break;
+          case 'destroyed':
+            // check if destroyed post is in posts before comment toggle
+            const idx = this.dataStore.posts.findIndex((p) => p.id === p.id);
+            if (idx > -1) {
+              // remove from posts if present and update components
+              this.dataStore.posts.splice(idx, 1);
+              this._posts.next(Object.assign({}, this.dataStore).posts);
+            } else {
+              /* if destroyed event reaches client before create then might need to check idx and
+              store if not found in defPosts to discard create when and if received */
+              console.log(`destroy event received for post that doesn't exist`);
+            }
+            break;
+          case 'removedFrom':
+            let postIdx = this.dataStore.posts.findIndex((p) => p.id === resp.id);
+            let commIdx;
+            if (postIdx > -1) {
+              commIdx = this.dataStore.posts[postIdx].comments.findIndex((c) => c.id === resp.removedId);
+              this.dataStore.posts[postIdx].comments.splice(commIdx, 1);
+              this._posts.next(Object.assign({}, this.dataStore).posts);
+            } else {
+              /* if destroyed event reaches client before create then might need to check idx and
+              store if not found in defPosts to discard create event when and if received */
+              console.log(`removedFrom event received for post that doesn't exist`);
+            }
             break;
           default:
             // unhandled event verb
@@ -124,6 +169,37 @@ export class TimelineService {
               // emits updated list of posts as a copy of dataStore via _posts Subject
               this._posts.next(Object.assign({}, this.dataStore).posts);
               break;
+            case 'destroyed':
+              // check if destroyed post is in posts before comment toggle
+              let idx = this.dataStore.posts.findIndex((p) => p.id === resp.id);
+              if (idx > -1) {
+                // remove from posts if present and update components
+                this.dataStore.posts.splice(idx, 1);
+                this._posts.next(Object.assign({}, this.dataStore).posts);
+              } else {
+                // if idx is -1 then post id must be in deferred posts remove update components
+                idx = this.dataStore.defPosts.findIndex((p) => p.id === resp.id);
+                /* if destroyed event reaches client before create then might need to check idx and
+                store if not found in defPosts to discard create when and if received */
+                this.dataStore.defPosts.splice(idx, 1);
+                this._defPosts.next(Object.assign({}, this.dataStore).defPosts.length);
+              }
+              break;
+            case 'removedFrom':
+              let postIdx = this.dataStore.posts.findIndex((p) => p.id === resp.id);
+              let commIdx;
+              if (postIdx > -1) {
+                commIdx = this.dataStore.posts[postIdx].comments.findIndex((c) => c.id === resp.removedId);
+                this.dataStore.posts[postIdx].comments.splice(commIdx, 1);
+                this._posts.next(Object.assign({}, this.dataStore).posts);
+              } else {
+                postIdx = this.dataStore.defPosts.findIndex((p) => p.id === resp.id);
+                /* if destroyed event reaches client before create then might need to check idx and
+                store if not found in defPosts to discard create event when and if received */
+                commIdx = this.dataStore.defPosts[postIdx].comments.findIndex((c) => c.id === resp.removedId);
+                this.dataStore.defPosts[postIdx].comments.splice(commIdx, 1);
+              }
+              break;
             default:
               // unhandled event verb
               console.log('unhandled event verb');
@@ -136,17 +212,6 @@ export class TimelineService {
       }
     }
 
-  }
-
-
-
-  constructor(
-    private sails: SailsClient,
-    private authService: AuthService
-  ) {
-    this.dataStore = { posts: [], defPosts: [] };
-    this._posts = new BehaviorSubject([]) as BehaviorSubject<Post[]>;
-    this._defPosts = new BehaviorSubject(0) as BehaviorSubject<number>;
   }
 
   createPost(postString) {
@@ -196,6 +261,22 @@ export class TimelineService {
           this._posts.next(Object.assign({}, this.dataStore).posts);
           observer.next(resp.status);
           observer.complete();
+        }, (err) => observer.error(err));
+    });
+  }
+
+  deleteComment(id: string) {
+    return new Observable((observer) => {
+      this.sails.delete('/comment/' + id)
+        .subscribe((resp) => {
+          let postIdx = this.dataStore.posts.findIndex((p) => p.id === resp.data.post);
+          let commIdx;
+          if (postIdx > -1) {
+            commIdx = this.dataStore.posts[postIdx].comments.findIndex((c) => c.id === resp.data.comment);
+            this.dataStore.posts[postIdx].comments.splice(commIdx, 1);
+            this._posts.next(Object.assign({}, this.dataStore).posts);
+            observer.complete();
+          }
         }, (err) => observer.error(err));
     });
   }

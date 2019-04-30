@@ -36,7 +36,12 @@
             <div>
               <!-- implement delete button for current user posts -->
               <!-- <button type="button" class="btn btn-sm btn-danger pull-right" (click)="deletePost();">Delete</button> -->
-              <button type="button" class="close" aria-label="Close" (click)="deletePost();">
+              <button
+                type="button"
+                class="close"
+                aria-label="Close"
+                (click)="deletePost();"
+                *ngIf="owner">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
