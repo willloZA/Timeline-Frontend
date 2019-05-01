@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
+import { NgbModal, NgbActiveModal, NgbAlert } from '@ng-bootstrap/ng-bootstrap';
 import { ISailsClientConfig, SailsClientModule } from 'ngx-sails';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -37,6 +38,9 @@ const socketConfig: ISailsClientConfig = { uri: 'http://localhost:1337' };
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
+    NgbModal,
+    NgbActiveModal,
+    NgbAlert,
     SailsClientModule.configureClient(socketConfig)
   ],
   providers: [
