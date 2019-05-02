@@ -6,6 +6,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
   templateUrl: './confirm-delete-modal.component.html',
   styleUrls: ['./confirm-delete-modal.component.scss']
 })
+// modal for confirmation of comment/post delete attempts
 export class ConfirmDeleteModalComponent {
 
   @Input() objName;

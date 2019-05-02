@@ -12,7 +12,9 @@ export class PostFormComponent {
 
   constructor() { }
 
+  // emit newPost to parent timeline component
   post(): void {
+    // test for empty post entry
     if (this.newPost && this.newPost.trim() !== '') {
       this.posted.emit(this.newPost);
       // console.log(`Post: \n"${this.newPost}"`);

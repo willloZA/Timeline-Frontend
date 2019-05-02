@@ -30,6 +30,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     this.timelineService.resetDefPosts();
   }
 
+  // either create post or present submit modal depending on client loggedIn status
   onPosted(message: string) {
     const authConn = this.authService.loggedIn
       .pipe(take(1))
@@ -37,6 +38,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         if (!resp) {
           this.modalService.open(SubmitModalComponent)
             .result.then((result) => {
+              // redirect based on modal selection
               if (result === 'Sign Up') {
                 this.router.navigate(['/signup']);
               } else {
@@ -46,11 +48,13 @@ export class TimelineComponent implements OnInit, OnDestroy {
               // console.log(`Dismissed ${reason}`);
             });
         } else if (resp) {
+          // create post if logged in
           this.timelineService.createPost(message)
             .subscribe((resp) => {
               // console.log(resp);
             }, (err) => {
               // console.log(err);
+              // populate error to display alert
               this.postErr = `${err.status}, please try again`;
             });
         }
@@ -66,6 +70,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    // unsub from any subscriptions on destroy
     this.timelineService.unwatchPosts();
   }
 

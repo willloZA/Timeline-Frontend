@@ -21,8 +21,6 @@ export class TimelineService {
 
   private connPost;
 
-  private connComment;
-
   private connDefPost;
 
   constructor(
@@ -44,7 +42,7 @@ export class TimelineService {
 
   loadAll() {
     // retrieves all posts via socket
-    this.sails.get('/post')
+    this.sails.get('/api/post')
       .subscribe(resp => {
         // updates dataStore of posts
         this.dataStore.posts = resp.data.reverse();
@@ -90,7 +88,8 @@ export class TimelineService {
             }
             break;
           case 'removedFrom':
-            let postIdx = this.dataStore.posts.findIndex((p) => p.id === resp.id);
+            // removes comment from datastore post
+            const postIdx = this.dataStore.posts.findIndex((p) => p.id === resp.id);
             let commIdx;
             if (postIdx > -1) {
               commIdx = this.dataStore.posts[postIdx].comments.findIndex((c) => c.id === resp.removedId);
@@ -110,15 +109,14 @@ export class TimelineService {
   }
 
   unwatchPosts() {
+    // unsubscribes from observables to avoid duplicate subscriptions
     this.connPost.unsubscribe();
-    if (this.connComment) {
-      this.connComment.unsubscribe();
-    }
     if (this.connDefPost) {
       this.connDefPost.unsubscribe();
     }
   }
 
+  // resets deferred posts and reloads posts in datastore
   resetDefPosts() {
     this.unwatchPosts();
     this.dataStore.defPosts = [];
@@ -144,10 +142,13 @@ export class TimelineService {
     this._posts.next(Object.assign({}, this.dataStore).posts);
 
     /* stops timeline async post updates until comments untoggled to prevent need for
-    scroll service (avoid too much time spent on trivial features)*/
+    scroll service (avoid scope creep)*/
     // console.log('toggled comment', toggled);
     if (toggled) {
+      // unsub from default watch logic
       this.unwatchPosts();
+      // sub to deferred post watch logic
+      // duplicate code can be refactored
       this.connDefPost = this.sails.on('post')
         .subscribe(resp => {
           // console.log('post event!', resp);
@@ -214,6 +215,7 @@ export class TimelineService {
 
   }
 
+  // create and submit post object
   createPost(postString) {
     const post = {
       message: postString,
@@ -229,22 +231,24 @@ export class TimelineService {
         this._posts.next(Object.assign({}, this.dataStore).posts);
         observer.next(resp.status);
         observer.complete();
-        // interpret error, send appropriate message for display
+        // send appropriate error message for display
       }, (err) => observer.error(err));
     });
   }
 
+  // delete Post
   deletePost(id: string) {
     return new Observable((observer) => {
       this.sails.delete('/post/' + id)
         .subscribe((resp) => {
+          // remove post entry from datastore on success
           this.dataStore.posts.splice(this.dataStore.posts.findIndex((post) => post.id === id), 1);
           this._posts.next(Object.assign({}, this.dataStore).posts);
           observer.complete();
-        }, (err) => observer.error(err));
+        }, (err) => observer.error(err)); // return err for alert
     });
   }
-  // ensure comment create is working correctly, return interpreted error as per above
+  // complete and submit comment object
   createComment(comment) {
     comment.user = this.authService.getUserId();
     return new Observable((observer) => {

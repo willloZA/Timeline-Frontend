@@ -9,6 +9,7 @@ import { AuthService } from '../auth.service';
 })
 export class NavComponent implements OnInit {
 
+  // async logged in status, used for displaying signup/login or logout links in nav
   isLoggedIn$: Observable<boolean>;
 
   constructor(private authService: AuthService) { }
@@ -17,6 +18,7 @@ export class NavComponent implements OnInit {
     this.isLoggedIn$ = this.authService.loggedIn;
   }
 
+  // logout current user
   onLogout() {
     this.authService.logout((resp) => {
       // console.log(resp);

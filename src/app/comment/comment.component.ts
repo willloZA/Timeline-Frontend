@@ -23,13 +23,16 @@ export class CommentComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    // determine whether client is owner of post, used to display delete button for owners
     if (this.comment.user.id === this.authService.getUserId()) {
       this.owner = true;
     }
   }
 
+  // display confirmation modal and proceed with delete depending on result
   deleteComment() {
-    const modalRef = this.modalService.open(ConfirmDeleteModalComponent)
+    const modalRef = this.modalService.open(ConfirmDeleteModalComponent);
+    // set objName in modal for context
     modalRef.componentInstance.objName = 'comment';
     modalRef.result.then((result) => {
         if (result === 'confirm') {

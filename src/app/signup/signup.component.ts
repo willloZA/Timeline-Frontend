@@ -40,14 +40,16 @@ export class SignupComponent implements OnInit {
   get password() { return this.signupForm.get('password'); }
 
   onSignupSubmit() {
+    // display validation errors if any
     this.submitted = true;
+    // return if invalid
     if (this.signupForm.invalid) {
       return;
     } else {
       this.authService.registerUser(this.signupForm.value, (resp) => {
         // console.log(resp);
         if (resp === 'Signup successful') {
-          // prevent alerts on form reset
+          // prevent validation errors on form reset on successful signup
           this.submitted = false;
           this.signupForm.reset();
           this.alert = { type: 'success', message: 'Successful Signup' };
@@ -62,6 +64,7 @@ export class SignupComponent implements OnInit {
           } else {
             this.alert = { type: 'danger', message: `${resp.status}, please try again` };
           }
+          // remove alert after 5 seconds
           setTimeout(() => this.alert = undefined, 5000);
         }
       });

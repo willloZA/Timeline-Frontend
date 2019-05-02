@@ -29,16 +29,19 @@ export class PostComponent implements OnInit {
 
   ngOnInit() {
     // console.log('post initialised: ', this.post);
+    // determine whether client is owner of post, used to display delete button for owners
     if (this.post.user.id === this.authService.getUserId()) {
       this.owner = true;
     }
   }
 
   toggleComments(): void {
+    // toggle persistant show comments on post
     this.timelineService.toggleComments(this.post.id);
   }
 
   onComment(content: string): void {
+    // test logged in status and display submit modal if not logged in or proceed with comment create
     const authConn = this.authService.loggedIn
       .pipe(take(1))
       .subscribe((resp) => {
@@ -71,8 +74,9 @@ export class PostComponent implements OnInit {
     authConn.unsubscribe();
   }
 
+  // display confirmation modal and proceed with delete depending on result
   deletePost() {
-    const modalRef = this.modalService.open(ConfirmDeleteModalComponent)
+    const modalRef = this.modalService.open(ConfirmDeleteModalComponent);
     modalRef.componentInstance.objName = 'post';
     modalRef.result.then((result) => {
         if (result === 'confirm') {

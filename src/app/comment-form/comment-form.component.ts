@@ -16,6 +16,7 @@ export class CommentFormComponent implements OnInit {
   ngOnInit() {
   }
 
+  // emit newComment to parent post component
   comment(): void {
     // check for valid input via form instead of regex
     if (this.newComment && this.newComment.trim() !== '') {

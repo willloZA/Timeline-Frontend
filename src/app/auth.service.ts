@@ -8,13 +8,14 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root'
 })
 export class AuthService {
-
+  /* userID used for post/comment creates, potentially profile/post/comment edits or stored 
+  locally for session persistance*/
   private currentUser: User;
 
-  // use loggedIn() to determine whether modal should be fired for post and comment submits
-
+  // updates logged in status
   private _loggedIn: BehaviorSubject<boolean>;
 
+  // change to host ip
   apiUrl = 'http://localhost:1337';
 
   constructor(private http: HttpClient) {
@@ -22,9 +23,11 @@ export class AuthService {
   }
 
   httpOptions = {
+    // required to persist session info on requests after login
     withCredentials: true
   };
 
+  // emits current logged in status and future changes to status
   get loggedIn() {
     return this._loggedIn.asObservable();
   }
@@ -36,8 +39,9 @@ export class AuthService {
     return this.currentUser.id;
   }
 
+  // register user
   registerUser(user, cb) {
-    return this.http.post(this.apiUrl + '/signup', user, this.httpOptions)
+    return this.http.post(this.apiUrl + '/api/signup', user, this.httpOptions)
       .subscribe((resp) => {
         if (resp['user']) {
           this.currentUser = resp['user'];
@@ -49,8 +53,9 @@ export class AuthService {
       });
   }
 
+  // login user
   login(user, cb) {
-    this.http.post(this.apiUrl + '/login', user, this.httpOptions)
+    this.http.post(this.apiUrl + '/api/login', user, this.httpOptions)
       .subscribe((resp) => {
         if (resp['user']) {
           this.currentUser = resp['user'];
@@ -62,8 +67,9 @@ export class AuthService {
       });
   }
 
+  // logout user
   logout(cb) {
-    this.http.get(this.apiUrl + '/logout', this.httpOptions)
+    this.http.get(this.apiUrl + '/api/logout', this.httpOptions)
       .subscribe((resp) => {
         this._loggedIn.next(false);
         cb(resp);

@@ -28,13 +28,16 @@ export class LoginFormComponent implements OnInit {
     });
   }
 
+  // attempt login with current values
   onLoginSubmit() {
     this.authService.login(this.loginForm.value, (resp) => {
       if (resp === 'logged in') {
+        // reset form and display message on success
         this.loginForm.reset();
         this.alert = { type: 'success', message: 'Successful login' };
         setTimeout(() => {
           this.alert = undefined;
+          // redirect to timeline
           this.router.navigate(['/timeline']);
         }, 1000);
       } else {
