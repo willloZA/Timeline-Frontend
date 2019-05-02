@@ -6,9 +6,9 @@
 </div>
 <div class="modal-body">
   <p><strong>Are you sure you want to delete this {{ objName }}?</strong>
-  <span class="text-danger" *ngIf="objName !== post">This operation can not be undone.</span>
+  <span class="text-danger" *ngIf="objName !== 'post'">This operation can not be undone.</span>
   </p>
-  <p *ngIf="objName === post">All comments associated to it will also be permanently deleted.
+  <p *ngIf="objName === 'post'">All comments associated to it will also be permanently deleted.
   <span class="text-danger">This operation can not be undone.</span>
   </p>
 </div>

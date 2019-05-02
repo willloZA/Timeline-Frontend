@@ -223,7 +223,7 @@ export class TimelineService {
     };
     // console.log(post);
     return new Observable((observer) => {
-      this.sails.post('/post', post)
+      this.sails.post('/api/post', post)
         .subscribe((resp) => {
         // updates dataStore of posts with newly created post
         this.dataStore.posts.unshift(resp.data);
@@ -239,7 +239,7 @@ export class TimelineService {
   // delete Post
   deletePost(id: string) {
     return new Observable((observer) => {
-      this.sails.delete('/post/' + id)
+      this.sails.delete('/api/post/' + id)
         .subscribe((resp) => {
           // remove post entry from datastore on success
           this.dataStore.posts.splice(this.dataStore.posts.findIndex((post) => post.id === id), 1);
@@ -252,7 +252,7 @@ export class TimelineService {
   createComment(comment) {
     comment.user = this.authService.getUserId();
     return new Observable((observer) => {
-      this.sails.post('/comment', comment)
+      this.sails.post('/api/comment', comment)
         .subscribe((resp) => {
           // console.log(resp);
           // updates dataStore of post with newly created comment
@@ -271,7 +271,7 @@ export class TimelineService {
 
   deleteComment(id: string) {
     return new Observable((observer) => {
-      this.sails.delete('/comment/' + id)
+      this.sails.delete('/api/comment/' + id)
         .subscribe((resp) => {
           const postIdx = this.dataStore.posts.findIndex((p) => p.id === resp.data.post);
           let commIdx;
