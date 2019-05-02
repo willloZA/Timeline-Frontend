@@ -1,5 +1,8 @@
 <div class="container">
   <!-- hide form if not authenticated -->
+  <ngb-alert
+        *ngIf="postErr"
+        (close)="postErr = undefined"> {{ postErr }} </ngb-alert>
   <app-post-form (posted)="onPosted($event);"></app-post-form>
   <button class="btn btn-primary sm" *ngIf="(defPosts | async) > 0" (click)="reloadTimeline();">+ {{ defPosts | async }} Posts</button>
   <div class="container" *ngFor="let post of posts | async">

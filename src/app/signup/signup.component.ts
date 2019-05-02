@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
 
 @Component({
@@ -10,30 +11,61 @@ import { AuthService } from '../auth.service';
 export class SignupComponent implements OnInit {
 
   signupForm: FormGroup;
+  alert: { type: string, message: string };
+  submitted = false;
 
   constructor(
     private formBuilder: FormBuilder,
+    private router: Router,
     private authService: AuthService
   ) { 
-    this.createForm()
+    this.createForm();
   }
 
   createForm() {
     this.signupForm = this.formBuilder.group({
-      firstName : ['', Validators.required],
-      lastName  : ['', Validators.required],
-      email     : ['', Validators.required],
-      password  : ['', Validators.required]
-    })
+      firstName : ['', [Validators.required, Validators.minLength(1), Validators.maxLength(30)]],
+      lastName  : ['', [Validators.required, Validators.minLength(1), Validators.maxLength(30)]],
+      email     : ['', [Validators.required, Validators.email]],
+      password  : ['', [Validators.required, Validators.minLength(6)]]
+    });
   }
 
+  get firstName() { return this.signupForm.get('firstName'); }
+
+  get lastName() { return this.signupForm.get('lastName'); }
+
+  get email() { return this.signupForm.get('email'); }
+
+  get password() { return this.signupForm.get('password'); }
+
   onSignupSubmit() {
-    this.authService.registerUser(this.signupForm.value)
-      .subscribe((data) => {
-        console.log(data);
+    this.submitted = true;
+    if (this.signupForm.invalid) {
+      return;
+    } else {
+      this.authService.registerUser(this.signupForm.value, (resp) => {
+        // console.log(resp);
+        if (resp === 'Signup successful') {
+          // prevent alerts on form reset
+          this.submitted = false;
+          this.signupForm.reset();
+          this.alert = { type: 'success', message: 'Successful Signup' };
+          setTimeout(() => {
+            this.alert = undefined;
+            this.router.navigate(['/timeline']);
+          }, 1000);
+        } else {
+          // alert for either invalid email/password or http error
+          if (resp.error) {
+            this.alert = { type: 'danger', message: resp.error.details };
+          } else {
+            this.alert = { type: 'danger', message: `${resp.status}, please try again` };
+          }
+          setTimeout(() => this.alert = undefined, 5000);
+        }
       });
-    console.log(this.signupForm.value);
-    this.signupForm.reset();
+    }
   }
 
   ngOnInit() {

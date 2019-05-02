@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
 
 @Component({
@@ -10,9 +11,11 @@ import { AuthService } from '../auth.service';
 export class LoginFormComponent implements OnInit {
 
   loginForm: FormGroup;
+  alert: { type: string, message: string };
 
   constructor(
     private formBuilder: FormBuilder,
+    private router: Router,
     private authService: AuthService
   ) {
     this.createForm();
@@ -22,14 +25,29 @@ export class LoginFormComponent implements OnInit {
     this.loginForm = this.formBuilder.group({
       email     : ['', Validators.required],
       password  : ['', Validators.required]
-    })
+    });
   }
 
   onLoginSubmit() {
     this.authService.login(this.loginForm.value, (resp) => {
-      console.log(resp);
+      if (resp === 'logged in') {
+        this.loginForm.reset();
+        this.alert = { type: 'success', message: 'Successful login' };
+        setTimeout(() => {
+          this.alert = undefined;
+          this.router.navigate(['/timeline']);
+        }, 1000);
+      } else {
+        // alert for either invalid email/password or http error
+        if (resp.error) {
+          this.alert = { type: 'danger', message: resp.error };
+        } else {
+          this.alert = { type: 'danger', message: `${resp.status}, please try again` };
+        }
+
+        setTimeout(() => this.alert = undefined, 5000);
+      }
     });
-    this.loginForm.reset();
   }
   ngOnInit() {
   }

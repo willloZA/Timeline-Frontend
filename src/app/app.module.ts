@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
-import { NgbModal, NgbActiveModal, NgbAlert } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModalModule, NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 import { ISailsClientConfig, SailsClientModule } from 'ngx-sails';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -17,6 +17,8 @@ import { CommentFormComponent } from './comment-form/comment-form.component';
 import { SignupComponent } from './signup/signup.component';
 import { AuthService } from './auth.service';
 import { LoginFormComponent } from './login-form/login-form.component';
+import { SubmitModalComponent } from './submit-modal/submit-modal.component';
+import { ConfirmDeleteModalComponent } from './confirm-delete-modal/confirm-delete-modal.component';
 
 const socketConfig: ISailsClientConfig = { uri: 'http://localhost:1337' };
 
@@ -30,7 +32,9 @@ const socketConfig: ISailsClientConfig = { uri: 'http://localhost:1337' };
     CommentComponent,
     CommentFormComponent,
     SignupComponent,
-    LoginFormComponent
+    LoginFormComponent,
+    SubmitModalComponent,
+    ConfirmDeleteModalComponent
   ],
   imports: [
     BrowserModule,
@@ -38,10 +42,13 @@ const socketConfig: ISailsClientConfig = { uri: 'http://localhost:1337' };
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    NgbModal,
-    NgbActiveModal,
-    NgbAlert,
+    NgbModalModule,
+    NgbAlertModule,
     SailsClientModule.configureClient(socketConfig)
+  ],
+  entryComponents: [
+    SubmitModalComponent,
+    ConfirmDeleteModalComponent
   ],
   providers: [
     AuthService

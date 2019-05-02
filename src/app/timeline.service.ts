@@ -57,7 +57,7 @@ export class TimelineService {
     // watches for pub sub events from sails regarding posts
     this.connPost = this.sails.on('post')
       .subscribe(resp => {
-        console.log('post event!', resp);
+        // console.log('post event!', resp);
         // seperate handler logic based on event verb
         switch (resp.verb) {
           case 'created':
@@ -86,7 +86,7 @@ export class TimelineService {
             } else {
               /* if destroyed event reaches client before create then might need to check idx and
               store if not found in defPosts to discard create when and if received */
-              console.log(`destroy event received for post that doesn't exist`);
+              // console.log(`destroy event received for post that doesn't exist`);
             }
             break;
           case 'removedFrom':
@@ -99,12 +99,12 @@ export class TimelineService {
             } else {
               /* if destroyed event reaches client before create then might need to check idx and
               store if not found in defPosts to discard create event when and if received */
-              console.log(`removedFrom event received for post that doesn't exist`);
+              // console.log(`removedFrom event received for post that doesn't exist`);
             }
             break;
           default:
             // unhandled event verb
-            console.log('unhandled event verb');
+            // console.log('unhandled event verb');
         }
       });
   }
@@ -145,12 +145,12 @@ export class TimelineService {
 
     /* stops timeline async post updates until comments untoggled to prevent need for
     scroll service (avoid too much time spent on trivial features)*/
-    console.log('toggled comment', toggled);
+    // console.log('toggled comment', toggled);
     if (toggled) {
       this.unwatchPosts();
       this.connDefPost = this.sails.on('post')
         .subscribe(resp => {
-          console.log('post event!', resp);
+          // console.log('post event!', resp);
           // seperate handler logic based on event verb
           switch (resp.verb) {
             case 'created':
@@ -202,7 +202,7 @@ export class TimelineService {
               break;
             default:
               // unhandled event verb
-              console.log('unhandled event verb');
+              // console.log('unhandled event verb');
           }
         });
     } else {
@@ -219,7 +219,7 @@ export class TimelineService {
       message: postString,
       user: this.authService.getUserId()
     };
-    console.log(post);
+    // console.log(post);
     return new Observable((observer) => {
       this.sails.post('/post', post)
         .subscribe((resp) => {
@@ -250,7 +250,7 @@ export class TimelineService {
     return new Observable((observer) => {
       this.sails.post('/comment', comment)
         .subscribe((resp) => {
-          console.log(resp);
+          // console.log(resp);
           // updates dataStore of post with newly created comment
           this.dataStore.posts.map((post) => {
             if ( post.id === resp.data.post) {
@@ -269,7 +269,7 @@ export class TimelineService {
     return new Observable((observer) => {
       this.sails.delete('/comment/' + id)
         .subscribe((resp) => {
-          let postIdx = this.dataStore.posts.findIndex((p) => p.id === resp.data.post);
+          const postIdx = this.dataStore.posts.findIndex((p) => p.id === resp.data.post);
           let commIdx;
           if (postIdx > -1) {
             commIdx = this.dataStore.posts[postIdx].comments.findIndex((c) => c.id === resp.data.comment);
@@ -277,7 +277,10 @@ export class TimelineService {
             this._posts.next(Object.assign({}, this.dataStore).posts);
             observer.complete();
           }
-        }, (err) => observer.error(err));
+        }, (err) => {
+          // console.log('err received');
+          observer.error(err);
+        });
     });
   }
 }

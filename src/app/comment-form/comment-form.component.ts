@@ -1,5 +1,4 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-comment-form',
@@ -17,15 +16,11 @@ export class CommentFormComponent implements OnInit {
   ngOnInit() {
   }
 
-  comment(form: NgForm): void {
-
+  comment(): void {
     // check for valid input via form instead of regex
     if (this.newComment && this.newComment.trim() !== '') {
       this.commented.emit(this.newComment);
-      // use Post Service comment method to update server and client's data
-      // console.log(`comment form emitted "${this.newComment}"`);
-      form.resetForm();
-      // this.newComment = undefined;
+      this.newComment = undefined;
     }
   }
 

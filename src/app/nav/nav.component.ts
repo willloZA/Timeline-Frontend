@@ -19,7 +19,7 @@ export class NavComponent implements OnInit {
 
   onLogout() {
     this.authService.logout((resp) => {
-      console.log(resp);
+      // console.log(resp);
     });
   }
 

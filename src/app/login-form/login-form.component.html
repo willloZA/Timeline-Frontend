@@ -20,9 +20,7 @@
           formControlName="password">
       </div>
     </div>
+    <ngb-alert [type]="alert.type" *ngIf="alert" (close)="alert=undefined">{{ alert.message }}</ngb-alert>
     <button type="submit" class="btn btn-primary">Sign in</button>
   </form>
-
-  <p>Email: {{ loginForm.value.email }}</p>
-  <p>Password: {{ loginForm.value.password }}</p>
 </div>

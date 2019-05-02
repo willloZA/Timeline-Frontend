@@ -11,6 +11,8 @@ export class AuthService {
 
   private currentUser: User;
 
+  // use loggedIn() to determine whether modal should be fired for post and comment submits
+
   private _loggedIn: BehaviorSubject<boolean>;
 
   apiUrl = 'http://localhost:1337';
@@ -34,8 +36,17 @@ export class AuthService {
     return this.currentUser.id;
   }
 
-  registerUser(user) {
-    return this.http.post(this.apiUrl + '/signup', user, this.httpOptions);
+  registerUser(user, cb) {
+    return this.http.post(this.apiUrl + '/signup', user, this.httpOptions)
+      .subscribe((resp) => {
+        if (resp['user']) {
+          this.currentUser = resp['user'];
+          this._loggedIn.next(true);
+        }
+        cb(resp['message']);
+      }, (err) => {
+        cb(err);
+      });
   }
 
   login(user, cb) {

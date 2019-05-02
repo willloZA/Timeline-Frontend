@@ -5,39 +5,41 @@
         <label for="inputFName">First Name</label>
         <div
           [ngClass]="{
-            'has-error': signupForm.controls.firstName.errors?.required 
-            && signupForm.controls.firstName.dirty,
-            'has-success': !signupForm.controls.firstName.errors}">
+            'has-error': firstName.errors 
+            && submitted}">
           <input
-          type="text"
-          class="form-control"
-          id="inputFName"
-          placeholder="First Name"
-          formControlName="firstName">
-          <ul class="help-block">
-            <li
-              *ngIf="signupForm.controls.firstName.errors?.required 
-              && signupForm.controls.firstName.dirty">Required field</li>
-          </ul>  
+            type="text"
+            class="form-control"
+            id="inputFName"
+            placeholder="First Name"
+            formControlName="firstName">
+          <ul
+            class="help-block"
+            *ngIf="firstName.errors 
+            && submitted">
+            <li>Required field</li>
+            <li>Maximum of 30 characters</li>
+          </ul>
         </div>
       </div>
       <div class="form-group col-md-6">
         <label for="inputLName">Last Name</label>
         <div
           [ngClass]="{
-            'has-error': signupForm.controls.lastName.errors?.required 
-            && signupForm.controls.lastName.dirty,
-            'has-success': !signupForm.controls.lastName.errors}">
+            'has-error': lastName.errors 
+            && submitted}">
           <input
             type="text"
             class="form-control"
             id="inputLName"
             placeholder="Last Name"
             formControlName="lastName">
-          <ul class="help-block">
-            <li
-              *ngIf="signupForm.controls.lastName.errors?.required 
-              && signupForm.controls.lastName.dirty">Required field</li>
+          <ul
+            class="help-block"
+            *ngIf="lastName.errors 
+            && submitted">
+            <li>Required field</li>
+            <li>Maximum of 30 characters</li>
           </ul>
         </div>
       </div>
@@ -45,28 +47,49 @@
     <div class="form-row">
       <div class="form-group col-md-6">
         <label for="inputEmail">Email</label>
-        <input
-          type="email"
-          class="form-control"
-          id="inputEmail"
-          placeholder="Email"
-          formControlName="email">
+        <div
+          [ngClass]="{
+            'has-error': email.errors 
+            && submitted}">
+          <input
+            type="email"
+            class="form-control"
+            id="inputEmail"
+            placeholder="Email"
+            formControlName="email">
+          <ul
+            class="help-block"
+            *ngIf="email.errors 
+            && submitted">
+            <li>Required field</li>
+            <li>Valid Email</li>
+          </ul>
+        </div>
       </div>
       <div class="form-group col-md-6">
         <label for="inputPassword">Password</label>
-        <input
-          type="password"
-          class="form-control"
-          id="inputPassword"
-          placeholder="Password"
-          formControlName="password">
+        <div
+          [ngClass]="{
+            'has-error': password.errors 
+            && submitted}">
+          <input
+            type="password"
+            class="form-control"
+            id="inputPassword"
+            placeholder="Password"
+            formControlName="password">
+          <ul
+            class="help-block"
+            *ngIf="password.errors 
+            && submitted">
+            <li>Required field</li>
+            <li>Minimum of 6 characters</li>
+          </ul>
+        </div>
       </div>
     </div>
+    <ngb-alert [type]="alert.type" *ngIf="alert" (close)="alert=undefined">{{ alert.message }}</ngb-alert>
     <button type="submit" class="btn btn-primary">Sign up</button>
   </form>
 
-  <p>First Name: {{ signupForm.value.firstName + ' errors:'}}</p><pre>{{ signupForm.controls.firstName.dirty }}</pre>
-  <p>Last Name: {{ signupForm.value.lastName }}</p>
-  <p>Email: {{ signupForm.value.email }}</p>
-  <p>Password: {{ signupForm.value.password }}</p>
 </div>

@@ -1,7 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { TimelineService } from '../timeline.service';
 import { Post } from '../post-comment';
+import { AuthService } from '../auth.service';
+import { SubmitModalComponent } from '../submit-modal/submit-modal.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-timeline',
@@ -12,9 +17,13 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   posts: Observable<Post[]>;
   defPosts: Observable<number>;
+  postErr: string;    // errors on post create
 
   constructor(
-    public timelineService: TimelineService
+    public timelineService: TimelineService,
+    private router: Router,
+    private authService: AuthService,
+    private modalService: NgbModal
   ) {}
 
   reloadTimeline() {
@@ -22,12 +31,31 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
 
   onPosted(message: string) {
-    this.timelineService.createPost(message)
+    const authConn = this.authService.loggedIn
+      .pipe(take(1))
       .subscribe((resp) => {
-        console.log(resp);
-      }, (err) => {
-        console.log(err);
+        if (!resp) {
+          this.modalService.open(SubmitModalComponent)
+            .result.then((result) => {
+              if (result === 'Sign Up') {
+                this.router.navigate(['/signup']);
+              } else {
+                this.router.navigate(['/login']);
+              }
+            }, (reason) => {
+              // console.log(`Dismissed ${reason}`);
+            });
+        } else if (resp) {
+          this.timelineService.createPost(message)
+            .subscribe((resp) => {
+              // console.log(resp);
+            }, (err) => {
+              // console.log(err);
+              this.postErr = `${err.status}, please try again`;
+            });
+        }
       });
+    authConn.unsubscribe();
   }
 
   ngOnInit() {

@@ -63,6 +63,9 @@
     </div>
     <div class="container" *ngIf="post.showComments">
       <!-- hide form if not authenticated -->
+      <ngb-alert
+        *ngIf="commErr"
+        (close)="commErr = undefined"> {{ commErr }} </ngb-alert>
       <app-comment-form (commented)="onComment($event);"></app-comment-form>
       <div *ngIf="post.comments.length === 0">
         Be the first to comment!
@@ -74,3 +77,6 @@
       </ul>
     </div>
 </div>
+<ngb-alert
+    *ngIf="postErr"
+    (close)="postErr = undefined"> {{ postErr }} </ngb-alert>
