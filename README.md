@@ -1,6 +1,6 @@
 # TimelineFrontend
 
-Requires https://github.com/willloZA/Timeline-Api.git to host.
+Requires https://github.com/willloZA/Timeline-Api to host.
 
 After cloning and npm installing, make ngx-sails-updates.sh executable and run it to update the ngx-sails packages rxjs imports as ng build will fail until this is fixed. Commands below.
 
