@@ -48,7 +48,7 @@ export class TimelineService {
         this.dataStore.posts = resp.data.reverse();
         // emits updated list of posts as a copy of dataStore via _posts Subject
         this._posts.next(Object.assign({}, this.dataStore).posts);
-      }, (error) => console.log('Could not load todos.', error));
+      }, (error) => console.log('Could not load posts.', error));
   }
 
   watchPosts() {

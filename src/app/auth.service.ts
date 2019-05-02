@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { User } from './authUser';
 import { BehaviorSubject } from 'rxjs';
-
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +16,7 @@ export class AuthService {
   private _loggedIn: BehaviorSubject<boolean>;
 
   // change to host ip
-  apiUrl = 'http://localhost:1337';
+  apiUrl = environment.url;
 
   constructor(private http: HttpClient) {
     // session storage for session persistance, update to JWT
@@ -81,6 +81,7 @@ export class AuthService {
   logout(cb) {
     this.http.get(this.apiUrl + '/api/logout', this.httpOptions)
       .subscribe((resp) => {
+        this.currentUser = undefined;
         sessionStorage.clear();
         this._loggedIn.next(false);
         cb(resp, null);

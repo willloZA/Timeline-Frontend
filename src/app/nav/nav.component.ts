@@ -29,6 +29,8 @@ export class NavComponent implements OnInit {
         console.log(err);
       }
       if (resp) {
+        // reload to remove delete options for posts/comments
+        // could potentially refactor to use async value to avoid
         this.timelineService.loadAll();
       }
     });

@@ -19,8 +19,9 @@ import { AuthService } from './auth.service';
 import { LoginFormComponent } from './login-form/login-form.component';
 import { SubmitModalComponent } from './submit-modal/submit-modal.component';
 import { ConfirmDeleteModalComponent } from './confirm-delete-modal/confirm-delete-modal.component';
+import { environment } from '../environments/environment';
 
-const socketConfig: ISailsClientConfig = { uri: 'http://localhost:1337' };
+const socketConfig: ISailsClientConfig = { uri: environment.url };
 
 @NgModule({
   declarations: [
