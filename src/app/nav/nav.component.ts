@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthService } from '../auth.service';
+import { TimelineService } from '../timeline.service';
 
 @Component({
   selector: 'app-nav',
@@ -12,7 +13,10 @@ export class NavComponent implements OnInit {
   // async logged in status, used for displaying signup/login or logout links in nav
   isLoggedIn$: Observable<boolean>;
 
-  constructor(private authService: AuthService) { }
+  constructor(
+    private authService: AuthService,
+    private timelineService: TimelineService
+    ) { }
 
   ngOnInit() {
     this.isLoggedIn$ = this.authService.loggedIn;
@@ -20,8 +24,13 @@ export class NavComponent implements OnInit {
 
   // logout current user
   onLogout() {
-    this.authService.logout((resp) => {
-      // console.log(resp);
+    this.authService.logout((resp, err) => {
+      if (err) {
+        console.log(err);
+      }
+      if (resp) {
+        this.timelineService.loadAll();
+      }
     });
   }
 

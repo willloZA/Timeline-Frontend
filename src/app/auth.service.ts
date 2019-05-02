@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { User } from './authUser';
 import { BehaviorSubject } from 'rxjs';
-import { TimelineService } from './timeline.service';
 
 
 @Injectable({
@@ -19,10 +18,7 @@ export class AuthService {
   // change to host ip
   apiUrl = 'http://localhost:1337';
 
-  constructor(
-    private http: HttpClient,
-    private timelineService: TimelineService
-    ) {
+  constructor(private http: HttpClient) {
     // session storage for session persistance, update to JWT
     const session = JSON.parse(sessionStorage.getItem('user'));
 
@@ -87,10 +83,9 @@ export class AuthService {
       .subscribe((resp) => {
         sessionStorage.clear();
         this._loggedIn.next(false);
-        this.timelineService.loadAll();
-        cb(resp);
+        cb(resp, null);
       }, (err) => {
-        cb(err);
+        cb(null, err);
       });
   }
 }
