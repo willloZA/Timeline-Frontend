@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { User } from './authUser';
 import { BehaviorSubject } from 'rxjs';
+import { TimelineService } from './timeline.service';
 
 
 @Injectable({
@@ -18,8 +19,19 @@ export class AuthService {
   // change to host ip
   apiUrl = 'http://localhost:1337';
 
-  constructor(private http: HttpClient) {
-    this._loggedIn = new BehaviorSubject<boolean>(false);
+  constructor(
+    private http: HttpClient,
+    private timelineService: TimelineService
+    ) {
+    // session storage for session persistance, update to JWT
+    const session = JSON.parse(sessionStorage.getItem('user'));
+
+    if (session) {
+      this.currentUser = session;
+      this._loggedIn = new BehaviorSubject<boolean>(true);
+    } else if (!session) {
+      this._loggedIn = new BehaviorSubject<boolean>(false);
+    }
   }
 
   httpOptions = {
@@ -45,6 +57,7 @@ export class AuthService {
       .subscribe((resp) => {
         if (resp['user']) {
           this.currentUser = resp['user'];
+          sessionStorage.setItem('user', JSON.stringify(this.currentUser));
           this._loggedIn.next(true);
         }
         cb(resp['message']);
@@ -59,6 +72,7 @@ export class AuthService {
       .subscribe((resp) => {
         if (resp['user']) {
           this.currentUser = resp['user'];
+          sessionStorage.setItem('user', JSON.stringify(this.currentUser));
           this._loggedIn.next(true);
         }
         cb(resp['message']);
@@ -71,7 +85,9 @@ export class AuthService {
   logout(cb) {
     this.http.get(this.apiUrl + '/api/logout', this.httpOptions)
       .subscribe((resp) => {
+        sessionStorage.clear();
         this._loggedIn.next(false);
+        this.timelineService.loadAll();
         cb(resp);
       }, (err) => {
         cb(err);
