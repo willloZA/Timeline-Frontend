@@ -3,21 +3,41 @@
     <div class="form-row">
       <div class="form-group col-md-6">
         <label for="inputEmail">Email</label>
-        <input
-          type="email"
-          class="form-control"
-          id="inputEmail"
-          placeholder="Email"
-          formControlName="email">
+        <div
+          [ngClass]="{'has-error': f.email.errors && submitted}">
+          <input
+            type="email"
+            class="form-control"
+            id="inputEmail"
+            placeholder="Email"
+            formControlName="email">
+          <ul
+            class="help-block"
+            *ngIf="f.email.errors 
+            && submitted">
+            <li *ngIf="f.email.errors.required">Required field</li>
+            <li *ngIf="f.email.errors.email">Valid Email</li>
+          </ul>
+        </div>
       </div>
       <div class="form-group col-md-6">
         <label for="inputPassword">Password</label>
-        <input
-          type="password"
-          class="form-control"
-          id="inputPassword"
-          placeholder="Password"
-          formControlName="password">
+        <div
+          [ngClass]="{'has-error': f.password.errors && submitted}">
+          <input
+            type="password"
+            class="form-control"
+            id="inputPassword"
+            placeholder="Password"
+            formControlName="password">
+          <ul
+            class="help-block"
+            *ngIf="f.password.errors 
+            && submitted">
+            <li *ngIf="f.password.errors.required">Required field</li>
+            <li *ngIf="f.password.errors.minlength">Minimum of 6 characters</li>
+          </ul>
+        </div>
       </div>
     </div>
     <ngb-alert [type]="alert.type" *ngIf="alert" (close)="alert=undefined">{{ alert.message }}</ngb-alert>
