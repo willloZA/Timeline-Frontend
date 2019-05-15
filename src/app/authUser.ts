@@ -1,6 +1,6 @@
 import { Post } from './post-comment';
 
-export class User {
+export interface User {
     firstName: string;
     lastName: string;
     email: string;

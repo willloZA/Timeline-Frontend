@@ -19,8 +19,20 @@ export class AuthService {
   apiUrl = environment.url;
 
   constructor(private http: HttpClient) {
-    // session storage for session persistance, update to JWT
-    const session = JSON.parse(sessionStorage.getItem('user'));
+    // retrieve previously stored user or null if none exists
+    const stored: string = sessionStorage.getItem('user');
+
+    let session: User;
+    // if stored not null then try parse stored string into User object
+    if (stored) {
+      try {
+        session = JSON.parse(stored);
+      } catch (e) {
+        // catch parse errors, clear sessionStorage if parse throws error
+        console.error(e.toString());
+        sessionStorage.clear();
+      }
+    }
 
     if (session) {
       this.currentUser = session;
@@ -46,47 +58,64 @@ export class AuthService {
     }
     return this.currentUser.id;
   }
+  /* alternatively standardise responses and assign interface to allow dot notation access
+  |* to the response properties */
+  
+  /* tslint:disable: no-string-literal */
 
   // register user
-  registerUser(user, cb) {
-    return this.http.post(this.apiUrl + '/api/signup', user, this.httpOptions)
-      .subscribe((resp) => {
-        if (resp['user']) {
-          this.currentUser = resp['user'];
-          sessionStorage.setItem('user', JSON.stringify(this.currentUser));
-          this._loggedIn.next(true);
-        }
-        cb(resp['message']);
-      }, (err) => {
-        cb(err);
-      });
+  registerUser(user) {
+    return new Promise((resolve, reject) => {
+      const sub = this.http.post(this.apiUrl + '/api/signup', user, this.httpOptions)
+        .subscribe((resp) => {
+          if (resp['user']) {
+            this.currentUser = resp['user'];
+            sessionStorage.setItem('user', JSON.stringify(this.currentUser));
+            this._loggedIn.next(true);
+          }
+          sub.unsubscribe();
+          resolve(resp['message']);
+        }, (err) => {
+          sub.unsubscribe();
+          reject(err);
+        });
+    });
   }
 
   // login user
-  login(user, cb) {
-    this.http.post(this.apiUrl + '/api/login', user, this.httpOptions)
-      .subscribe((resp) => {
-        if (resp['user']) {
-          this.currentUser = resp['user'];
-          sessionStorage.setItem('user', JSON.stringify(this.currentUser));
-          this._loggedIn.next(true);
-        }
-        cb(resp['message']);
-      }, (err) => {
-        cb(err);
-      });
+  login(user) {
+    return new Promise((resolve, reject) => {
+      const sub = this.http.post(this.apiUrl + '/api/login', user, this.httpOptions)
+        .subscribe((resp) => {
+          if (resp['user']) {
+            this.currentUser = resp['user'];
+            sessionStorage.setItem('user', JSON.stringify(this.currentUser));
+            this._loggedIn.next(true);
+          }
+          sub.unsubscribe();
+          resolve(resp['message']);
+        }, (err) => {
+          sub.unsubscribe();
+          reject(err);
+        });
+    });
   }
 
   // logout user
-  logout(cb) {
-    this.http.get(this.apiUrl + '/api/logout', this.httpOptions)
-      .subscribe((resp) => {
-        this.currentUser = undefined;
-        sessionStorage.clear();
-        this._loggedIn.next(false);
-        cb(resp, null);
-      }, (err) => {
-        cb(null, err);
-      });
+  logout() {
+    return new Promise((resolve, reject) => {
+      const sub = this.http.get(this.apiUrl + '/api/logout', this.httpOptions)
+        .subscribe((resp) => {
+          this.currentUser = undefined;
+          sessionStorage.clear();
+          this._loggedIn.next(false);
+          sub.unsubscribe();
+          resolve(resp);
+        }, (err) => {
+          sub.unsubscribe();
+          reject(err);
+        });
+    });
   }
+  /* tslint:enable:no-string-literal */
 }

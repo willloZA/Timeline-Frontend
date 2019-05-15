@@ -46,28 +46,27 @@ export class SignupComponent implements OnInit {
     if (this.signupForm.invalid) {
       return;
     } else {
-      this.authService.registerUser(this.signupForm.value, (resp) => {
-        // console.log(resp);
-        if (resp === 'Signup successful') {
+      this.authService.registerUser(this.signupForm.value)
+        .then((resp: string) => {
           // prevent validation errors on form reset on successful signup
           this.submitted = false;
           this.signupForm.reset();
-          this.alert = { type: 'success', message: 'Successful Signup' };
+          this.alert = { type: 'success', message: resp };
           setTimeout(() => {
             this.alert = undefined;
             this.router.navigate(['/timeline']);
           }, 1000);
-        } else {
+        })
+        .catch((err) => {
           // alert for either invalid email/password or http error
-          if (resp.error) {
-            this.alert = { type: 'danger', message: resp.error.details };
+          if (err.error) {
+            this.alert = { type: 'danger', message: err.error.details };
           } else {
-            this.alert = { type: 'danger', message: `${resp.status}, please try again` };
+            this.alert = { type: 'danger', message: `${err.status}, please try again` };
           }
           // remove alert after 5 seconds
           setTimeout(() => this.alert = undefined, 5000);
-        }
-      });
+        });
     }
   }
 

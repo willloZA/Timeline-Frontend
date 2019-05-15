@@ -24,16 +24,15 @@ export class NavComponent implements OnInit {
 
   // logout current user
   onLogout() {
-    this.authService.logout((resp, err) => {
-      if (err) {
-        console.log(err);
-      }
-      if (resp) {
+    this.authService.logout()
+      .then((resp) => {
         // reload to remove delete options for posts/comments
         // could potentially refactor to use async value to avoid
         this.timelineService.loadAll();
-      }
-    });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
 }

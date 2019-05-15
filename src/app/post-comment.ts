@@ -1,11 +1,11 @@
 //refactor with users.ts
-export class User {
+export interface User {
     firstName   : string;
     lastName    : string;
     id          : string;
 }
 
-export class Comment {
+export interface Comment {
     user        : User;
     message     : string;
     createdAt   : Date;      //add date calculation method to display "minutes/hours ago" instead of full date for recent posts
