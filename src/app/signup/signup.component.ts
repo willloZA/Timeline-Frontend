@@ -18,26 +18,9 @@ export class SignupComponent implements OnInit {
     private formBuilder: FormBuilder,
     private router: Router,
     private authService: AuthService
-  ) { 
-    this.createForm();
-  }
+  ) {}
 
-  createForm() {
-    this.signupForm = this.formBuilder.group({
-      firstName : ['', [Validators.required, Validators.minLength(1), Validators.maxLength(30)]],
-      lastName  : ['', [Validators.required, Validators.minLength(1), Validators.maxLength(30)]],
-      email     : ['', [Validators.required, Validators.email]],
-      password  : ['', [Validators.required, Validators.minLength(6)]]
-    });
-  }
-
-  get firstName() { return this.signupForm.get('firstName'); }
-
-  get lastName() { return this.signupForm.get('lastName'); }
-
-  get email() { return this.signupForm.get('email'); }
-
-  get password() { return this.signupForm.get('password'); }
+  get f() { return this.signupForm.controls; }
 
   onSignupSubmit() {
     // display validation errors if any
@@ -71,6 +54,12 @@ export class SignupComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.signupForm = this.formBuilder.group({
+      firstName : ['', [Validators.required, Validators.minLength(1), Validators.maxLength(30)]],
+      lastName  : ['', [Validators.required, Validators.minLength(1), Validators.maxLength(30)]],
+      email     : ['', [Validators.required, Validators.email]],
+      password  : ['', [Validators.required, Validators.minLength(6)]]
+    });
   }
 
 }

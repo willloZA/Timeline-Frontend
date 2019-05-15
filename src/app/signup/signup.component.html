@@ -5,7 +5,7 @@
         <label for="inputFName">First Name</label>
         <div
           [ngClass]="{
-            'has-error': firstName.errors 
+            'has-error': f.firstName.errors 
             && submitted}">
           <input
             type="text"
@@ -15,10 +15,10 @@
             formControlName="firstName">
           <ul
             class="help-block"
-            *ngIf="firstName.errors 
+            *ngIf="f.firstName.errors 
             && submitted">
-            <li>Required field</li>
-            <li>Maximum of 30 characters</li>
+            <li *ngIf="f.firstName.errors.required">Required field</li>
+            <li *ngIf="f.firstName.errors.maxlength">Maximum of 30 characters</li>
           </ul>
         </div>
       </div>
@@ -26,7 +26,7 @@
         <label for="inputLName">Last Name</label>
         <div
           [ngClass]="{
-            'has-error': lastName.errors 
+            'has-error': f.lastName.errors 
             && submitted}">
           <input
             type="text"
@@ -36,10 +36,10 @@
             formControlName="lastName">
           <ul
             class="help-block"
-            *ngIf="lastName.errors 
+            *ngIf="f.lastName.errors 
             && submitted">
-            <li>Required field</li>
-            <li>Maximum of 30 characters</li>
+            <li *ngIf="f.lastName.errors.required">Required field</li>
+            <li *ngIf="f.lastName.errors.maxlength">Maximum of 30 characters</li>
           </ul>
         </div>
       </div>
@@ -49,7 +49,7 @@
         <label for="inputEmail">Email</label>
         <div
           [ngClass]="{
-            'has-error': email.errors 
+            'has-error': f.email.errors 
             && submitted}">
           <input
             type="email"
@@ -59,10 +59,10 @@
             formControlName="email">
           <ul
             class="help-block"
-            *ngIf="email.errors 
+            *ngIf="f.email.errors 
             && submitted">
-            <li>Required field</li>
-            <li>Valid Email</li>
+            <li *ngIf="f.email.errors.required">Required field</li>
+            <li *ngIf="f.email.errors.email">Valid Email</li>
           </ul>
         </div>
       </div>
@@ -70,7 +70,7 @@
         <label for="inputPassword">Password</label>
         <div
           [ngClass]="{
-            'has-error': password.errors 
+            'has-error': f.password.errors 
             && submitted}">
           <input
             type="password"
@@ -80,10 +80,10 @@
             formControlName="password">
           <ul
             class="help-block"
-            *ngIf="password.errors 
+            *ngIf="f.password.errors 
             && submitted">
-            <li>Required field</li>
-            <li>Minimum of 6 characters</li>
+            <li *ngIf="f.password.errors.required">Required field</li>
+            <li *ngIf="f.password.errors.minlength">Minimum of 6 characters</li>
           </ul>
         </div>
       </div>
