@@ -8,21 +8,26 @@ import { environment } from '../environments/environment';
   providedIn: 'root'
 })
 export class AuthService {
-  /* userID used for post/comment creates, potentially profile/post/comment edits or stored 
+  /* userID used for post/comment creates, potentially profile/post/comment edits or stored
   locally for session persistance*/
   private currentUser: User;
 
   // updates logged in status
-  private _loggedIn: BehaviorSubject<boolean>;
+  private loggedInSubject: BehaviorSubject<boolean>;
 
   // change to host ip
   apiUrl = environment.url;
+
+  /* alternatively standardise responses and assign interface to allow dot notation access
+  |* to the response properties */
+  /* tslint:disable: no-string-literal */
 
   constructor(private http: HttpClient) {
     // retrieve previously stored user or null if none exists
     const stored: string = sessionStorage.getItem('user');
 
     let session: User;
+    console.log(stored);
     // if stored not null then try parse stored string into User object
     if (stored) {
       try {
@@ -33,12 +38,18 @@ export class AuthService {
         sessionStorage.clear();
       }
     }
-
+    console.log(session);
     if (session) {
+      const sub = this.http.post(this.apiUrl + '/api/test', {id: session.id})
+        .subscribe((resp) => {
+
+        }, (err) => {
+
+        });
       this.currentUser = session;
-      this._loggedIn = new BehaviorSubject<boolean>(true);
+      this.loggedInSubject = new BehaviorSubject<boolean>(true);
     } else if (!session) {
-      this._loggedIn = new BehaviorSubject<boolean>(false);
+      this.loggedInSubject = new BehaviorSubject<boolean>(false);
     }
   }
 
@@ -49,7 +60,7 @@ export class AuthService {
 
   // emits current logged in status and future changes to status
   get loggedIn() {
-    return this._loggedIn.asObservable();
+    return this.loggedInSubject.asObservable();
   }
 
   getUserId() {
@@ -58,10 +69,6 @@ export class AuthService {
     }
     return this.currentUser.id;
   }
-  /* alternatively standardise responses and assign interface to allow dot notation access
-  |* to the response properties */
-  
-  /* tslint:disable: no-string-literal */
 
   // register user
   registerUser(user) {
@@ -71,7 +78,7 @@ export class AuthService {
           if (resp['user']) {
             this.currentUser = resp['user'];
             sessionStorage.setItem('user', JSON.stringify(this.currentUser));
-            this._loggedIn.next(true);
+            this.loggedInSubject.next(true);
           }
           sub.unsubscribe();
           resolve(resp['message']);
@@ -90,7 +97,7 @@ export class AuthService {
           if (resp['user']) {
             this.currentUser = resp['user'];
             sessionStorage.setItem('user', JSON.stringify(this.currentUser));
-            this._loggedIn.next(true);
+            this.loggedInSubject.next(true);
           }
           sub.unsubscribe();
           resolve(resp['message']);
@@ -108,7 +115,7 @@ export class AuthService {
         .subscribe((resp) => {
           this.currentUser = undefined;
           sessionStorage.clear();
-          this._loggedIn.next(false);
+          this.loggedInSubject.next(false);
           sub.unsubscribe();
           resolve(resp);
         }, (err) => {

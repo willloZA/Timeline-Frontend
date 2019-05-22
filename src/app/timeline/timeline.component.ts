@@ -34,8 +34,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
   onPosted(message: string) {
     const authConn = this.authService.loggedIn
       .pipe(take(1))
-      .subscribe((resp) => {
-        if (!resp) {
+      .subscribe((authResp) => {
+        if (!authResp) {
           this.modalService.open(SubmitModalComponent)
             .result.then((result) => {
               // redirect based on modal selection
@@ -47,7 +47,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
             }, (reason) => {
               // console.log(`Dismissed ${reason}`);
             });
-        } else if (resp) {
+        } else if (authResp) {
           // create post if logged in
           this.timelineService.createPost(message)
             .subscribe((resp) => {

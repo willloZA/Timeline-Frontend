@@ -10,12 +10,12 @@ import { Post } from './post-comment';
 export class TimelineService {
 
   // BehaviorSubject (instead of Subject) so that on subscribe latest event will be emitted
-  private _posts: BehaviorSubject<Post[]>;
+  private postArrSubject: BehaviorSubject<Post[]>;
 
   /* pass to timeline component to display count of deferred posts once post comment is focused
   this is mainly to avoid needing to monitor and calculate scroll position on async post updates
    */
-  private _defPosts: BehaviorSubject<number>;
+  private defPostsSubject: BehaviorSubject<number>;
 
   private dataStore: { posts: Post[], defPosts: Post[] };
 
@@ -28,16 +28,16 @@ export class TimelineService {
     private authService: AuthService
   ) {
     this.dataStore = { posts: [], defPosts: [] };
-    this._posts = new BehaviorSubject([]) as BehaviorSubject<Post[]>;
-    this._defPosts = new BehaviorSubject(0) as BehaviorSubject<number>;
+    this.postArrSubject = new BehaviorSubject([]) as BehaviorSubject<Post[]>;
+    this.defPostsSubject = new BehaviorSubject(0) as BehaviorSubject<number>;
   }
 
   get posts() {
-    return this._posts.asObservable();
+    return this.postArrSubject.asObservable();
   }
 
   get defPosts() {
-    return this._defPosts.asObservable();
+    return this.defPostsSubject.asObservable();
   }
 
   loadAll() {
@@ -47,7 +47,7 @@ export class TimelineService {
         // updates dataStore of posts
         this.dataStore.posts = resp.data.reverse();
         // emits updated list of posts as a copy of dataStore via _posts Subject
-        this._posts.next(Object.assign({}, this.dataStore).posts);
+        this.postArrSubject.next(Object.assign({}, this.dataStore).posts);
       }, (error) => console.log('Could not load posts.', error));
   }
 
@@ -62,7 +62,7 @@ export class TimelineService {
             // updates dataStore of posts with newly created post
             this.dataStore.posts.unshift(resp.data);
             // emits updated list of posts as a copy of dataStore via _posts Subject
-            this._posts.next(Object.assign({}, this.dataStore).posts);
+            this.postArrSubject.next(Object.assign({}, this.dataStore).posts);
             break;
           case 'addedTo':
             // updates dataStore post comments with new comment
@@ -72,7 +72,7 @@ export class TimelineService {
               }
             });
             // emits updated list of posts as a copy of dataStore via _posts Subject
-            this._posts.next(Object.assign({}, this.dataStore).posts);
+            this.postArrSubject.next(Object.assign({}, this.dataStore).posts);
             break;
           case 'destroyed':
             // check if destroyed post is in posts before comment toggle
@@ -80,7 +80,7 @@ export class TimelineService {
             if (idx > -1) {
               // remove from posts if present and update components
               this.dataStore.posts.splice(idx, 1);
-              this._posts.next(Object.assign({}, this.dataStore).posts);
+              this.postArrSubject.next(Object.assign({}, this.dataStore).posts);
             } else {
               /* if destroyed event reaches client before create then might need to check idx and
               store if not found in defPosts to discard create when and if received */
@@ -94,7 +94,7 @@ export class TimelineService {
             if (postIdx > -1) {
               commIdx = this.dataStore.posts[postIdx].comments.findIndex((c) => c.id === resp.removedId);
               this.dataStore.posts[postIdx].comments.splice(commIdx, 1);
-              this._posts.next(Object.assign({}, this.dataStore).posts);
+              this.postArrSubject.next(Object.assign({}, this.dataStore).posts);
             } else {
               /* if destroyed event reaches client before create then might need to check idx and
               store if not found in defPosts to discard create event when and if received */
@@ -120,7 +120,7 @@ export class TimelineService {
   resetDefPosts() {
     this.unwatchPosts();
     this.dataStore.defPosts = [];
-    this._defPosts.next(Object.assign({}, this.dataStore).defPosts.length);
+    this.defPostsSubject.next(Object.assign({}, this.dataStore).defPosts.length);
     this.loadAll();
     this.watchPosts();
   }
@@ -139,7 +139,7 @@ export class TimelineService {
       }
     });
     // emits updated list of posts as a copy of dataStore via _posts Subject
-    this._posts.next(Object.assign({}, this.dataStore).posts);
+    this.postArrSubject.next(Object.assign({}, this.dataStore).posts);
 
     /* stops timeline async post updates until comments untoggled to prevent need for
     scroll service (avoid scope creep)*/
@@ -158,7 +158,7 @@ export class TimelineService {
               // updates dataStore of deferred posts with newly created post
               this.dataStore.defPosts.push(resp.data);
               // emits updated count of deferred posts via _defPosts Subject
-              this._defPosts.next(Object.assign({}, this.dataStore).defPosts.length);
+              this.defPostsSubject.next(Object.assign({}, this.dataStore).defPosts.length);
               break;
             case 'addedTo':
               // updates dataStore post comments with new comment
@@ -168,7 +168,7 @@ export class TimelineService {
                 }
               });
               // emits updated list of posts as a copy of dataStore via _posts Subject
-              this._posts.next(Object.assign({}, this.dataStore).posts);
+              this.postArrSubject.next(Object.assign({}, this.dataStore).posts);
               break;
             case 'destroyed':
               // check if destroyed post is in posts before comment toggle
@@ -176,14 +176,14 @@ export class TimelineService {
               if (idx > -1) {
                 // remove from posts if present and update components
                 this.dataStore.posts.splice(idx, 1);
-                this._posts.next(Object.assign({}, this.dataStore).posts);
+                this.postArrSubject.next(Object.assign({}, this.dataStore).posts);
               } else {
                 // if idx is -1 then post id must be in deferred posts remove update components
                 idx = this.dataStore.defPosts.findIndex((p) => p.id === resp.id);
                 /* if destroyed event reaches client before create then might need to check idx and
                 store if not found in defPosts to discard create when and if received */
                 this.dataStore.defPosts.splice(idx, 1);
-                this._defPosts.next(Object.assign({}, this.dataStore).defPosts.length);
+                this.defPostsSubject.next(Object.assign({}, this.dataStore).defPosts.length);
               }
               break;
             case 'removedFrom':
@@ -192,7 +192,7 @@ export class TimelineService {
               if (postIdx > -1) {
                 commIdx = this.dataStore.posts[postIdx].comments.findIndex((c) => c.id === resp.removedId);
                 this.dataStore.posts[postIdx].comments.splice(commIdx, 1);
-                this._posts.next(Object.assign({}, this.dataStore).posts);
+                this.postArrSubject.next(Object.assign({}, this.dataStore).posts);
               } else {
                 postIdx = this.dataStore.defPosts.findIndex((p) => p.id === resp.id);
                 /* if destroyed event reaches client before create then might need to check idx and
@@ -228,7 +228,7 @@ export class TimelineService {
         // updates dataStore of posts with newly created post
         this.dataStore.posts.unshift(resp.data);
         // emits updated list of posts as a copy of dataStore via _posts Subject
-        this._posts.next(Object.assign({}, this.dataStore).posts);
+        this.postArrSubject.next(Object.assign({}, this.dataStore).posts);
         observer.next(resp.status);
         observer.complete();
         // send appropriate error message for display
@@ -243,7 +243,7 @@ export class TimelineService {
         .subscribe((resp) => {
           // remove post entry from datastore on success
           this.dataStore.posts.splice(this.dataStore.posts.findIndex((post) => post.id === id), 1);
-          this._posts.next(Object.assign({}, this.dataStore).posts);
+          this.postArrSubject.next(Object.assign({}, this.dataStore).posts);
           observer.complete();
         }, (err) => observer.error(err)); // return err for alert
     });
@@ -262,7 +262,7 @@ export class TimelineService {
             }
           });
           // emits updated list of posts as a copy of dataStore via _posts Subject
-          this._posts.next(Object.assign({}, this.dataStore).posts);
+          this.postArrSubject.next(Object.assign({}, this.dataStore).posts);
           observer.next(resp.status);
           observer.complete();
         }, (err) => observer.error(err));
@@ -278,7 +278,7 @@ export class TimelineService {
           if (postIdx > -1) {
             commIdx = this.dataStore.posts[postIdx].comments.findIndex((c) => c.id === resp.data.comment);
             this.dataStore.posts[postIdx].comments.splice(commIdx, 1);
-            this._posts.next(Object.assign({}, this.dataStore).posts);
+            this.postArrSubject.next(Object.assign({}, this.dataStore).posts);
             observer.complete();
           }
         }, (err) => {
