@@ -76,7 +76,7 @@ export class TimelineService {
             break;
           case 'destroyed':
             // check if destroyed post is in posts before comment toggle
-            const idx = this.dataStore.posts.findIndex((p) => p.id === p.id);
+            const idx = this.dataStore.posts.findIndex((p) => p.id === resp.id);
             if (idx > -1) {
               // remove from posts if present and update components
               this.dataStore.posts.splice(idx, 1);
@@ -138,80 +138,80 @@ export class TimelineService {
         toggled = this.dataStore.posts[idx].showComments;
       }
     });
-    // emits updated list of posts as a copy of dataStore via _posts Subject
+    // emits updated list of posts as a copy of dataStore via postArrSubject
     this.postArrSubject.next(Object.assign({}, this.dataStore).posts);
 
     /* stops timeline async post updates until comments untoggled to prevent need for
     scroll service (avoid scope creep)*/
     // console.log('toggled comment', toggled);
-    if (toggled) {
-      // unsub from default watch logic
-      this.unwatchPosts();
-      // sub to deferred post watch logic
-      // duplicate code can be refactored
-      this.connDefPost = this.sails.on('post')
-        .subscribe(resp => {
-          // console.log('post event!', resp);
-          // seperate handler logic based on event verb
-          switch (resp.verb) {
-            case 'created':
-              // updates dataStore of deferred posts with newly created post
-              this.dataStore.defPosts.push(resp.data);
-              // emits updated count of deferred posts via _defPosts Subject
-              this.defPostsSubject.next(Object.assign({}, this.dataStore).defPosts.length);
-              break;
-            case 'addedTo':
-              // updates dataStore post comments with new comment
-              this.dataStore.posts.map((post) => {
-                if (post.id === resp.id) {
-                  post.comments.unshift(resp.added);
-                }
-              });
-              // emits updated list of posts as a copy of dataStore via _posts Subject
-              this.postArrSubject.next(Object.assign({}, this.dataStore).posts);
-              break;
-            case 'destroyed':
-              // check if destroyed post is in posts before comment toggle
-              let idx = this.dataStore.posts.findIndex((p) => p.id === resp.id);
-              if (idx > -1) {
-                // remove from posts if present and update components
-                this.dataStore.posts.splice(idx, 1);
-                this.postArrSubject.next(Object.assign({}, this.dataStore).posts);
-              } else {
-                // if idx is -1 then post id must be in deferred posts remove update components
-                idx = this.dataStore.defPosts.findIndex((p) => p.id === resp.id);
-                /* if destroyed event reaches client before create then might need to check idx and
-                store if not found in defPosts to discard create when and if received */
-                this.dataStore.defPosts.splice(idx, 1);
-                this.defPostsSubject.next(Object.assign({}, this.dataStore).defPosts.length);
-              }
-              break;
-            case 'removedFrom':
-              let postIdx = this.dataStore.posts.findIndex((p) => p.id === resp.id);
-              let commIdx;
-              if (postIdx > -1) {
-                commIdx = this.dataStore.posts[postIdx].comments.findIndex((c) => c.id === resp.removedId);
-                this.dataStore.posts[postIdx].comments.splice(commIdx, 1);
-                this.postArrSubject.next(Object.assign({}, this.dataStore).posts);
-              } else {
-                postIdx = this.dataStore.defPosts.findIndex((p) => p.id === resp.id);
-                /* if destroyed event reaches client before create then might need to check idx and
-                store if not found in defPosts to discard create event when and if received */
-                commIdx = this.dataStore.defPosts[postIdx].comments.findIndex((c) => c.id === resp.removedId);
-                this.dataStore.defPosts[postIdx].comments.splice(commIdx, 1);
-              }
-              break;
-            default:
-              // unhandled event verb
-              // console.log('unhandled event verb');
-          }
-        });
-    } else {
-      // check if any other posts have comments shown before updating with deferred posts
-      if (!this.dataStore.posts.find((post) => post.showComments === true)) {
-        this.resetDefPosts();
-      }
-    }
+    // if (toggled) {
+    //   // unsub from default watch logic
+    //   this.unwatchPosts();
+    //   // sub to deferred post watch logic
+    //   // duplicate code can be refactored
+    //   this.connDefPost = this.sails.on('post')
+    //     .subscribe(resp => {
+    //       // console.log('post event!', resp);
+    //       // seperate handler logic based on event verb
+    //       switch (resp.verb) {
+    //         case 'created':
+    //           // updates dataStore of deferred posts with newly created post
+    //           this.dataStore.defPosts.push(resp.data);
+    //           // emits updated count of deferred posts via _defPosts Subject
+    //           this.defPostsSubject.next(Object.assign({}, this.dataStore).defPosts.length);
+    //           break;
+    //         case 'addedTo':
+    //           // updates dataStore post comments with new comment
+    //           this.dataStore.posts.map((post) => {
+    //             if (post.id === resp.id) {
+    //               post.comments.unshift(resp.added);
+    //             }
+    //           });
+    //           // emits updated list of posts as a copy of dataStore via _posts Subject
+    //           this.postArrSubject.next(Object.assign({}, this.dataStore).posts);
+    //           break;
+    //         case 'destroyed':
+    //           // check if destroyed post is in posts before comment toggle
+    //           let idx = this.dataStore.posts.findIndex((p) => p.id === resp.id);
+    //           if (idx > -1) {
+    //             // remove from posts if present and update components
+    //             this.dataStore.posts.splice(idx, 1);
+    //             this.postArrSubject.next(Object.assign({}, this.dataStore).posts);
+    //           } else {
+    //             // if idx is -1 then post id must be in deferred posts remove update components
+    //             idx = this.dataStore.defPosts.findIndex((p) => p.id === resp.id);
+    //             /* if destroyed event reaches client before create then might need to check idx and
+    //             store if not found in defPosts to discard create when and if received */
+    //             this.dataStore.defPosts.splice(idx, 1);
+    //             this.defPostsSubject.next(Object.assign({}, this.dataStore).defPosts.length);
+    //           }
+    //           break;
+    //         case 'removedFrom':
+    //           let postIdx = this.dataStore.posts.findIndex((p) => p.id === resp.id);
+    //           let commIdx;
+    //           if (postIdx > -1) {
+    //             commIdx = this.dataStore.posts[postIdx].comments.findIndex((c) => c.id === resp.removedId);
+    //             this.dataStore.posts[postIdx].comments.splice(commIdx, 1);
+    //             this.postArrSubject.next(Object.assign({}, this.dataStore).posts);
+    //           } else {
+    //             postIdx = this.dataStore.defPosts.findIndex((p) => p.id === resp.id);
+    //             /* if destroyed event reaches client before create then might need to check idx and
+    //             store if not found in defPosts to discard create event when and if received */
+    //             commIdx = this.dataStore.defPosts[postIdx].comments.findIndex((c) => c.id === resp.removedId);
+    //             this.dataStore.defPosts[postIdx].comments.splice(commIdx, 1);
+    //           }
+    //           break;
+    //         default:
+    //           // unhandled event verb
+    //           // console.log('unhandled event verb');
+    //       }
+    //     });
+    // } else {
+    //   // check if any other posts have comments shown before updating with deferred posts
+    //   if (!this.dataStore.posts.find((post) => post.showComments === true)) {
+    //     this.resetDefPosts();
+    //   }
+    // }
 
   }
 
