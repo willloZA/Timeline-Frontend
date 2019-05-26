@@ -1,4 +1,6 @@
 import { Component, EventEmitter, Output } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { notEmptyValidator } from '../not-empty.validator';
 
 @Component({
   selector: 'app-post-form',
@@ -8,17 +10,23 @@ import { Component, EventEmitter, Output } from '@angular/core';
 export class PostFormComponent {
 
   @Output() posted = new EventEmitter<string>();
-  newPost: string;
+  submitted = false;
+  newPost = new FormControl('', notEmptyValidator);
 
   constructor() { }
 
   // emit newPost to parent timeline component
   post(): void {
-    // test for empty post entry
-    if (this.newPost && this.newPost.trim() !== '') {
-      this.posted.emit(this.newPost);
-      // console.log(`Post: \n"${this.newPost}"`);
-      this.newPost = undefined;
+    this.submitted = true;
+    if (this.newPost.valid) {
+      this.posted.emit(this.newPost.value);
+      this.submitted = false;
+      this.newPost.setValue('');
+    } else {
+      setTimeout(() => {
+        this.submitted = false;
+        this.newPost.setValue('');
+      }, 5000);
     }
   }
 

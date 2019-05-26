@@ -1,17 +1,30 @@
 <form novalidate (ngSubmit)="post()" autocomplete="off">
-  <div class="input-group">
-    <textarea
-      name="comment"
-      class="form-control"
-      placeholder="Post"
-      type="text"
-      rows="1"
-      (keydown.enter)="post();false"
-      [(ngModel)]="newPost"></textarea>
+  <div
+      class="input-group"
+      [ngClass]="{
+        'has-error': newPost.errors 
+        && submitted}">
+      <textarea
+        name="comment"
+        class="form-control"
+        placeholder="Post"
+        type="text"
+        rows="1"
+        (keydown.enter)="post();false"
+        [formControl]="newPost"></textarea>
     <div>
       <button class="btn btn-primary sm" type="submit">Send</button>
     </div>
   </div>
+  <ul
+    class="help-block"
+    *ngIf="newPost.errors 
+    && submitted"
+    [ngClass]="{
+      'has-error': newPost.errors
+      && submitted}">
+    <li *ngIf="newPost.errors.notEmpty">Cannot send empty post</li>
+  </ul>
   <small class="form-text text-muted">
     Shift+Enter newline.
   </small>

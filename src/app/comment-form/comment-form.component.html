@@ -1,6 +1,10 @@
 <form novalidate (ngSubmit)="comment()" autocomplete="off">
   <div class="col-12 comment-input">
-    <div class="input-group">
+    <div 
+      class="input-group"
+      [ngClass]="{
+        'has-error': newComment.errors 
+        && submitted}">
       <textarea
         name="comment"
         class="form-control"
@@ -8,11 +12,20 @@
         type="text"
         rows="1"
         (keydown.enter)="comment();false"
-        [(ngModel)]="newComment"></textarea>
+        [formControl]="newComment"></textarea>
       <div>
         <button class="btn btn-primary sm" type="submit">Send</button>
       </div>
     </div>
+    <ul
+      class="help-block"
+      *ngIf="newComment.errors 
+      && submitted"
+      [ngClass]="{
+        'has-error': newComment.errors
+        && submitted}">
+      <li *ngIf="newComment.errors.notEmpty">Cannot send empty post</li>
+    </ul>
     <small class="form-text text-muted">
       Shift+Enter newline. Close comments to resync timeline or click the button at the top of timeline.
     </small>

@@ -13,7 +13,7 @@ export class AuthService {
   private currentUser: User;
 
   // updates logged in status
-  private loggedInSubject: BehaviorSubject<boolean>;
+  private loggedInSubject = new BehaviorSubject<boolean>(false);
 
   // change to host ip
   apiUrl = environment.url;
@@ -42,14 +42,13 @@ export class AuthService {
     if (session) {
       const sub = this.http.post(this.apiUrl + '/api/test', {id: session.id})
         .subscribe((resp) => {
-
+          sub.unsubscribe();
+          this.currentUser = session;
+          this.loggedInSubject = new BehaviorSubject<boolean>(true);
         }, (err) => {
-
+          sub.unsubscribe();
+          sessionStorage.clear();
         });
-      this.currentUser = session;
-      this.loggedInSubject = new BehaviorSubject<boolean>(true);
-    } else if (!session) {
-      this.loggedInSubject = new BehaviorSubject<boolean>(false);
     }
   }
 

@@ -1,4 +1,6 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { notEmptyValidator } from '../not-empty.validator';
 
 @Component({
   selector: 'app-comment-form',
@@ -8,8 +10,8 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 export class CommentFormComponent implements OnInit {
 
   @Output() commented = new EventEmitter<string>();
-
-  newComment: string;
+  submitted = false;
+  newComment = new FormControl('', notEmptyValidator);
 
   constructor() { }
 
@@ -18,10 +20,16 @@ export class CommentFormComponent implements OnInit {
 
   // emit newComment to parent post component
   comment(): void {
-    // check for valid input via form instead of regex
-    if (this.newComment && this.newComment.trim() !== '') {
-      this.commented.emit(this.newComment);
-      this.newComment = undefined;
+    this.submitted = true;
+    if (this.newComment.valid) {
+      this.commented.emit(this.newComment.value);
+      this.submitted = false;
+      this.newComment.setValue('');
+    } else {
+      setTimeout(() => {
+        this.submitted = false;
+        this.newComment.setValue('');
+      }, 5000);
     }
   }
 

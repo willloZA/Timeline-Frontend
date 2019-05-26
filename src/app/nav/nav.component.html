@@ -10,20 +10,20 @@
       class="nav-link"
       routerLink="signup"
       [routerLinkActive]="['active']"
-      *ngIf="!(isLoggedIn$ | async)">Signup</a>
+      *ngIf="!(authService.loggedIn | async)">Signup</a>
   </li>
   <li class="nav-item">
     <a
       class="nav-link"
       routerLink="login"
       [routerLinkActive]="['active']"
-      *ngIf="!(isLoggedIn$ | async)">Login</a>
+      *ngIf="!(authService.loggedIn | async)">Login</a>
   </li>
   <li class="nav-item">
     <a
       class="nav-link"
       routerLink="timeline"
-      *ngIf="(isLoggedIn$ | async)"
+      *ngIf="(authService.loggedIn | async)"
       (click)="onLogout();">Logout</a>
   </li>
 </ul>

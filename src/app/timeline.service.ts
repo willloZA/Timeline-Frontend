@@ -225,27 +225,28 @@ export class TimelineService {
     return new Observable((observer) => {
       this.sails.post('/api/post', post)
         .subscribe((resp) => {
-        // updates dataStore of posts with newly created post
-        this.dataStore.posts.unshift(resp.data);
-        // emits updated list of posts as a copy of dataStore via _posts Subject
-        this.postArrSubject.next(Object.assign({}, this.dataStore).posts);
-        observer.next(resp.status);
-        observer.complete();
-        // send appropriate error message for display
-      }, (err) => observer.error(err));
+          // updates dataStore of posts with newly created post
+          this.dataStore.posts.unshift(resp.data);
+          // emits updated list of posts as a copy of dataStore via _posts Subject
+          this.postArrSubject.next(Object.assign({}, this.dataStore).posts);
+          observer.next(resp.status);
+          observer.complete();
+      }, (err) => observer.error(err)); // send appropriate error message for display
     });
   }
 
   // delete Post
   deletePost(id: string) {
+    console.log(id);
     return new Observable((observer) => {
       this.sails.delete('/api/post/' + id)
         .subscribe((resp) => {
+          console.log(resp);
           // remove post entry from datastore on success
           this.dataStore.posts.splice(this.dataStore.posts.findIndex((post) => post.id === id), 1);
           this.postArrSubject.next(Object.assign({}, this.dataStore).posts);
           observer.complete();
-        }, (err) => observer.error(err)); // return err for alert
+        }, (err) => observer.error(err)); // send appropriate error message for display
     });
   }
   // complete and submit comment object
@@ -265,7 +266,7 @@ export class TimelineService {
           this.postArrSubject.next(Object.assign({}, this.dataStore).posts);
           observer.next(resp.status);
           observer.complete();
-        }, (err) => observer.error(err));
+        }, (err) => observer.error(err)); // send appropriate error message for display
     });
   }
 
@@ -281,10 +282,7 @@ export class TimelineService {
             this.postArrSubject.next(Object.assign({}, this.dataStore).posts);
             observer.complete();
           }
-        }, (err) => {
-          // console.log('err received');
-          observer.error(err);
-        });
+        }, (err) => observer.error(err)); // send appropriate error message for display
     });
   }
 }

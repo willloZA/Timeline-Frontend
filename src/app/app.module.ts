@@ -35,7 +35,7 @@ const socketConfig: ISailsClientConfig = { uri: environment.url };
     SignupComponent,
     LoginFormComponent,
     SubmitModalComponent,
-    ConfirmDeleteModalComponent
+    ConfirmDeleteModalComponent,
   ],
   imports: [
     BrowserModule,

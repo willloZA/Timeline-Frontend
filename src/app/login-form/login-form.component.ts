@@ -30,8 +30,11 @@ export class LoginFormComponent implements OnInit {
     if (this.loginForm.invalid) {
       return;
     } else {
+      //
+      this.submitted = true;
       this.authService.login(this.loginForm.value)
         .then((resp: string) => {
+          this.submitted = false;
           // reset form and display message on success
           this.loginForm.reset();
           this.alert = { type: 'success', message: resp };
