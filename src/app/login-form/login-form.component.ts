@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
@@ -6,7 +6,8 @@ import { AuthService } from '../auth.service';
 @Component({
   selector: 'app-login-form',
   templateUrl: './login-form.component.html',
-  styleUrls: ['./login-form.component.scss']
+  styleUrls: ['./login-form.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginFormComponent implements OnInit {
 
@@ -15,6 +16,7 @@ export class LoginFormComponent implements OnInit {
   submitted = false;
 
   constructor(
+    private cdr: ChangeDetectorRef,
     private formBuilder: FormBuilder,
     private router: Router,
     private authService: AuthService
@@ -38,6 +40,7 @@ export class LoginFormComponent implements OnInit {
           // reset form and display message on success
           this.loginForm.reset();
           this.alert = { type: 'success', message: resp };
+          this.cdr.detectChanges();
           setTimeout(() => {
             this.alert = undefined;
             // redirect to timeline

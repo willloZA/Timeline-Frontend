@@ -42,7 +42,7 @@ export class AuthService {
         .subscribe((resp) => {
           sub.unsubscribe();
           this.currentUser = session;
-          this.loggedInSubject = new BehaviorSubject<boolean>(true);
+          this.loggedInSubject.next(true);
         }, (err) => {
           sub.unsubscribe();
           sessionStorage.clear();

@@ -1,20 +1,27 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Observable } from 'rxjs';
 import { AuthService } from '../auth.service';
 import { TimelineService } from '../timeline.service';
 
 @Component({
   selector: 'app-nav',
   templateUrl: './nav.component.html',
-  styleUrls: ['./nav.component.scss']
+  styleUrls: ['./nav.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class NavComponent {
+export class NavComponent implements OnInit {
 
   // async logged in status, used for displaying signup/login or logout links in nav
+  loggedIn$: Observable<boolean>;
 
   constructor(
-    public authService: AuthService,
+    private authService: AuthService,
     private timelineService: TimelineService
     ) { }
+
+  ngOnInit() {
+    this.loggedIn$ = this.authService.loggedIn;
+  }
 
   // logout current user
   onLogout() {

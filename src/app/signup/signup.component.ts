@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
@@ -6,7 +6,8 @@ import { AuthService } from '../auth.service';
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
-  styleUrls: ['./signup.component.scss']
+  styleUrls: ['./signup.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SignupComponent implements OnInit {
 
@@ -15,6 +16,7 @@ export class SignupComponent implements OnInit {
   submitted = false;
 
   constructor(
+    private cdr: ChangeDetectorRef,
     private formBuilder: FormBuilder,
     private router: Router,
     private authService: AuthService
@@ -35,6 +37,7 @@ export class SignupComponent implements OnInit {
           this.submitted = false;
           this.signupForm.reset();
           this.alert = { type: 'success', message: resp };
+          this.cdr.detectChanges();
           setTimeout(() => {
             this.alert = undefined;
             this.router.navigate(['/timeline']);
