@@ -139,7 +139,6 @@ export class TimelineService {
 
   // delete Post
   deletePost(id: string) {
-    console.log(id);
     return new Observable((observer) => {
       this.sails.delete('/api/post/' + id)
         .subscribe((resp) => {
