@@ -27,7 +27,6 @@ export class AuthService {
     const stored: string = sessionStorage.getItem('user');
 
     let session: User;
-    console.log(stored);
     // if stored not null then try parse stored string into User object
     if (stored) {
       try {
@@ -38,7 +37,6 @@ export class AuthService {
         sessionStorage.clear();
       }
     }
-    console.log(session);
     if (session) {
       const sub = this.http.post(this.apiUrl + '/api/test', {id: session.id})
         .subscribe((resp) => {
