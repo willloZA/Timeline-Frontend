@@ -16,7 +16,6 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 export class TimelineComponent implements OnInit, OnDestroy {
 
   posts: Observable<Post[]>;
-  defPosts: Observable<number>;
   postErr: string;    // errors on post create
 
   constructor(
@@ -25,10 +24,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private modalService: NgbModal
   ) {}
-
-  reloadTimeline() {
-    this.timelineService.resetDefPosts();
-  }
 
   // either create post or present submit modal depending on client loggedIn status
   onPosted(message: string) {
@@ -64,7 +59,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.posts = this.timelineService.posts;
-    this.defPosts = this.timelineService.defPosts;
     this.timelineService.loadAll();
     this.timelineService.watchPosts();
   }
