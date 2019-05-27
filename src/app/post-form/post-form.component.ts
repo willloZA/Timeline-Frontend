@@ -25,7 +25,6 @@ export class PostFormComponent {
     } else {
       setTimeout(() => {
         this.submitted = false;
-        this.newPost.setValue('');
       }, 5000);
     }
   }

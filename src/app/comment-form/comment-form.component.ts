@@ -28,7 +28,6 @@ export class CommentFormComponent implements OnInit {
     } else {
       setTimeout(() => {
         this.submitted = false;
-        this.newComment.setValue('');
       }, 5000);
     }
   }
